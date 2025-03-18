@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Virtual Environment
+venv/
+env/
+.env
+.env.local
+*.env
+*.venv
+
+# Logs
+logs/
+*.log
+debug.log
+
+# Django specific
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+
+# Ignore secret keys & API keys
+config/settings_local.py
+secrets.json
+
+# VSCode & JetBrains (PyCharm) project settings
+.vscode/
+.idea/
+
+# MacOS & Linux
+.DS_Store
+*.swp
