@@ -2,20 +2,21 @@ import { ImHammer2 } from "react-icons/im";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector,useDispatch } from "react-redux";
-import { logout } from "../features/authentication/authSlice";
+import { logoutUser } from "../features/authentication/authSlice";
 
 function Header() {
-    const authStatus = useSelector((state) => state.auth.authStatus); // Read state
+   // const authStatus = useSelector((state) => state.auth?.authTokens || false);    // Read state
+    const { user, notification, error, loading } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const navItems = [
         { name: "Home", slug: "/", active: true },
         { name: "About", slug: "/about", active: true },
-        { name: "Profile", slug: "/profile", active: authStatus },
-        { name: "Watchlist", slug: "/watchlist", active: authStatus },
+        { name: "Profile", slug: "/profile", active: user },
+        { name: "Watchlist", slug: "/watchlist", active: user },
         { name: "Categories", slug: "/categories", active: true },
-        { name: "Login", slug:"/login", active: !authStatus}
+        { name: "Login", slug:"/login", active: !user}
     ];
 
     return (
@@ -40,9 +41,9 @@ function Header() {
                                     </li>
                                 )
                         )}
-                        {authStatus && (
+                        {user && (
                             <li>
-                                <button className="px-4 py-2 text-white border border-yellow-400 rounded-full hover:bg-yellow-500 transition duration-300" onClick={() => dispatch(logout())}>
+                                <button className="px-4 py-2 text-white border border-yellow-400 rounded-full hover:bg-yellow-500 transition duration-300" onClick={() => dispatch(logoutUser())}>
                                     Logout
                                 </button>
                             </li>
