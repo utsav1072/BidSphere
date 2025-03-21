@@ -1,4 +1,6 @@
+import { useNavigate } from "react-router-dom";
 function Profile() {
+    const navigate = useNavigate();
     return (
         <div className="flex justify-between items-start p-10 bg-gray-100 min-h-screen">
             {/* Profile Card */}
@@ -21,7 +23,7 @@ function Profile() {
 
             {/* Profile Actions */}
             <div className="w-2/3 space-y-6">
-                <div className="w-full h-40 rounded-2xl border border-gray-300 bg-white shadow-md p-6 flex items-center text-lg font-medium text-gray-800 hover:shadow-lg transition">
+                <div className="w-full h-40 rounded-2xl border border-gray-300 bg-white shadow-md p-6 flex items-center text-lg font-medium text-gray-800 hover:shadow-lg transition" onClick={() => {navigate('/itemforbid')}}>
                     Place an Item for Bid
                 </div>
                 <div className="w-full h-40 rounded-2xl border border-gray-300 bg-white shadow-md p-6">

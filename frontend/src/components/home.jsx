@@ -1,21 +1,23 @@
+import { Navigate, useNavigate } from "react-router-dom";
 function Home() {
+    const navigate = useNavigate();
     return (
         <>
             <div className="flex justify-between items-center px-10 py-6 border-b border-gray-300">
                 <h1 className="text-2xl font-semibold text-gray-800">Featured Auctions</h1>
-                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl shadow-md transition-all">
+                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl shadow-md transition-all" onClick={() => navigate(`/auction/all-items`)}>
                     View All
                 </button>
             </div>
 
             <div className="flex justify-between items-center p-8 gap-6">
-                <div className="h-80 w-1/3 border-2 border-gray-300 rounded-2xl shadow-lg bg-white flex items-center justify-center">
+                <div className="h-80 w-1/3 border-2 border-gray-300 rounded-2xl shadow-lg bg-white flex items-center justify-center cursor hover:shadow-2xl transition-all" onClick={() => navigate(`/auction/`)}>
                     <span className="text-gray-400">Auction Item</span>
                 </div>
-                <div className="h-80 w-1/3 border-2 border-gray-300 rounded-2xl shadow-lg bg-white flex items-center justify-center">
+                <div className="h-80 w-1/3 border-2 border-gray-300 rounded-2xl shadow-lg bg-white flex items-center justify-center cursor hover:shadow-2xl transition-all" onClick={() => navigate(`/auction/`)}>
                     <span className="text-gray-400">Auction Item</span>
                 </div>
-                <div className="h-80 w-1/3 border-2 border-gray-300 rounded-2xl shadow-lg bg-white flex items-center justify-center">
+                <div className="h-80 w-1/3 border-2 border-gray-300 rounded-2xl shadow-lg bg-white flex items-center justify-center cursor hover:shadow-2xl transition-all" onClick={() => navigate(`/auction/`)}>
                     <span className="text-gray-400">Auction Item</span>
                 </div>
             </div>
