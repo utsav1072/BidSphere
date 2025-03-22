@@ -1,30 +1,68 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import post_save
+from django.utils import timezone
 
 class User(AbstractUser):
-    username = models.CharField(max_length=100,unique = True)
+    username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    full_name = models.CharField(max_length=1000, default="Anonymous User")
+    bio = models.CharField(max_length=100, blank=True, null=True)
+    image = models.CharField(max_length=50, default="1")
+    verified = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    def profile(self):
-        profile = Profile.objects.get(user=self)
+class Category(models.Model):
+    category_name = models.CharField(max_length=255, unique=True)
+    ## description = models.TextField()
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=1000)
-    bio = models.CharField(max_length=100)
-    image = models.CharField(max_length=50, default="1")
-    verified = models.BooleanField(default=False)
+class Item(models.Model):
+    id = models.AutoField(primary_key=True)
+    seller = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    starting_price = models.DecimalField(max_digits=10, decimal_places=2)
+    current_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    bid_increment = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    status = models.CharField(max_length=50, choices=[('active', 'Active'), ('closed', 'Closed')])
+    image_url = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+class Bid(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    bidder = models.ForeignKey(User, on_delete=models.CASCADE)
+    bid_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    bid_time = models.DateTimeField(auto_now_add=True)
 
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+class Payment(models.Model):
+    winner = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_status = models.CharField(max_length=50, choices=[('pending', 'Pending'), ('completed', 'Completed'), ('failed', 'Failed')])
+    payment_date = models.DateTimeField(default=timezone.now)
+    payment_method = models.CharField(max_length=100)
 
-post_save.connect(create_user_profile, sender=User)
-post_save.connect(save_user_profile, sender=User)
+class Auction(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    highest_bid = models.ForeignKey(Bid, on_delete=models.SET_NULL, null=True, blank=True)
+    winner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    auction_status = models.CharField(max_length=50, choices=[('ongoing', 'Ongoing'), ('completed', 'Completed'), ('cancelled', 'Cancelled')])
+
+class Review(models.Model):
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews_given')
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews_received')
+    rating = models.IntegerField()
+    review_text = models.TextField()
+    review_date = models.DateTimeField(default=timezone.now)
+
+class Watchlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(default=timezone.now)

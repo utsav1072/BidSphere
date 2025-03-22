@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from api.models import User
+from api.models import User, Category, Item, Watchlist, Bid, Auction, Review
 from rest_framework import status
 
-from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer
+from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer, AuctionSerializer, ReviewSerializer
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -78,3 +78,117 @@ def userProfile(request):
         bio = user_profile.bio
         return Response({'fullname': fullname,'bio' : bio }, status=status.HTTP_200_OK)
     
+@api_view(['GET'])
+def getCategory(request):
+    if request.method == 'GET':
+        categories = Category.objects.values_list('category_name', flat=True)
+        return Response({'category_name': list(categories)}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getItems(request):
+    if request.method == 'GET':
+        items = Item.objects.values('id', 'title', 'description', 'current_price', 'category__category_name', 'image_url')
+        return Response({'items': list(items)}, status=status.HTTP_200_OK)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
+def getWatchlist(request):
+    user_id = request.user.id
+    watchlist_items = Watchlist.objects.filter(user_id=user_id).select_related('item')
+
+    data = [
+        {
+            'id': entry.item.id,
+            'title': entry.item.title,
+            'description': entry.item.description,
+            'current_price': entry.item.current_price,
+            'category': entry.item.category.category_name if entry.item.category else None,
+            'image_url': entry.item.image_url,
+            'added_on': entry.added_on
+        }
+        for entry in watchlist_items
+    ]
+
+    return Response({'watchlist': data}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_bids(request):
+    user = request.user
+    bids = Bid.objects.filter(bidder=user).select_related('item')
+
+    data = [
+        {
+            'bid_id': bid.id,
+            'item_id': bid.item.id,
+            'item_title': bid.item.title,
+            'bid_amount': bid.bid_amount,
+            'bid_time': bid.bid_time
+        }
+        for bid in bids
+    ]
+
+    return Response({'bids': data}, status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET'])
+def get_all_auctions(request):
+    auctions = Auction.objects.select_related('item', 'highest_bid', 'winner').all()
+    serializer = AuctionSerializer(auctions, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# ✅ 2. Get a Specific Auction by ID
+@api_view(['GET'])
+def get_auction(request, auction_id):
+    try:
+        auction = Auction.objects.select_related('item', 'highest_bid', 'winner').get(id=auction_id)
+        serializer = AuctionSerializer(auction)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Auction.DoesNotExist:
+        return Response({"error": "Auction not found"}, status=status.HTTP_404_NOT_FOUND)
+
+# ✅ 3. Create a New Auction
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_auction(request):
+    serializer = AuctionSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# ✅ 4. Update an Auction (Status, Highest Bid, Winner)
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_auction(request, auction_id):
+    try:
+        auction = Auction.objects.get(id=auction_id)
+    except Auction.DoesNotExist:
+        return Response({"error": "Auction not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = AuctionSerializer(auction, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# ✅ 5. Delete an Auction
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_auction(request, auction_id):
+    try:
+        auction = Auction.objects.get(id=auction_id)
+        auction.delete()
+        return Response({"message": "Auction deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except Auction.DoesNotExist:
+        return Response({"error": "Auction not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class SellerReviewsListView(generics.ListAPIView):
+    serializer_class = ReviewSerializer 
+    
+    def get_queryset(self):
+        seller_id = self.kwargs.get('seller_id')  # Get seller ID from the URL
+        return Review.objects.filter(seller_id=seller_id)  # Fetch reviews for this seller
