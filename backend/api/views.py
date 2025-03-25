@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from api.models import User, Category, Item, Watchlist, Bid, Auction, Review
 from rest_framework import status
 
-from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer, AuctionSerializer, ReviewSerializer, ItemSerializer
+from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer, AuctionSerializer, ReviewSerializer, ItemSerializer, BidSerializer
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -217,5 +217,14 @@ def item_search_view(request):
     serializer = ItemSerializer(results, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_bid(request):
+    serializer = BidSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

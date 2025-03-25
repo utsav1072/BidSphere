@@ -9,6 +9,7 @@ import Categories from "./components/categories";
 import Watchlist from "./components/watchlist";
 import Aitemdetail from "./components/aitemdetail";
 import Allitems from "./components/allitems";
+import Singlecat from "./components/singlecat";
 
 function App() {
   return (
@@ -20,9 +21,10 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/watchlist" element={<Watchlist />} />
                 <Route path="/categories" element={<Categories />} />
-                <Route path="/auction/" element={<Aitemdetail/>}/>
+                <Route path="/auction/item/:id" element={<Aitemdetail/>}/>
                 <Route path="/auction/all-items" element={<Allitems/>}/>
                 <Route path="/login" element={<Signup/>}/>
+                <Route path="/auction/category/:cat" element={<Singlecat />} />
             </Routes>
             <Footer/>
     </div>

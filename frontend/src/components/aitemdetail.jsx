@@ -1,17 +1,20 @@
-import React from 'react'
+import React from 'react';
+import { useParams } from 'react-router-dom';
 import { IoMdAdd } from "react-icons/io";
 
 const Aitemdetail = () => {
+  const { id } = useParams();
+
   return (
     <div className='flex flex-col md:flex-row bg-white shadow-xl rounded-3xl p-8 m-6 h-120 border border-gray-200'>
       <div className='h-80 w-80 border-2 rounded-3xl overflow-hidden flex items-center justify-center bg-gray-100 shadow-md'>
-        <img src='' alt='image-of-item' className='h-full w-full object-cover' />
+        <img src='' alt={`image-of-item-${id}`} className='h-full w-full object-cover' />
       </div>
       <div className='flex-1 m-4 p-4 flex flex-col justify-between'>
         <div className='flex justify-between items-center mb-4'>
-          <h1 className='text-3xl font-bold text-gray-800'>Name Of the Auction Item</h1>
+          <h1 className='text-3xl font-bold text-gray-800'>Auction Item {id}</h1>
           <button className='text-blue-500 hover:text-blue-600 font-semibold transition-all flex items-center'>
-          <IoMdAdd className="text-xl mr-1"/>Add to Watchlist
+            <IoMdAdd className="text-xl mr-1"/>Add to Watchlist
           </button>
         </div>
         <div className='mb-6 text-lg text-gray-700'>
@@ -33,7 +36,7 @@ const Aitemdetail = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Aitemdetail;

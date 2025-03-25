@@ -40,11 +40,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
-    # ✅ Serializer for Bid Model
-class BidSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Bid
-        fields = '__all__'  # Includes 'item', 'bidder', 'bid_amount', 'bid_time'
+
 
 # ✅ Serializer for Item Model (Optional, if you need item details)
 class ItemSerializer(serializers.ModelSerializer):
@@ -52,14 +48,55 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         fields = '__all__'  # Modify as needed
 
+
+class BidSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bid
+        fields = '__all__'
+
+    def validate(self, data):
+        """Ensure the bid amount is higher than the current price."""
+        item = data['item']
+        bid_amount = data['bid_amount']
+
+        if bid_amount <= item.current_price:
+            raise serializers.ValidationError({"bid_amount": "Bid must be higher than the current price."})
+
+        return data
+
+    def create(self, validated_data):
+        """Create bid, update item's current price, and update auction's highest bid."""
+        item = validated_data['item']
+        bid = Bid.objects.create(**validated_data)
+        
+        # Update item's current price to the latest bid amount
+        item.current_price = bid.bid_amount
+        item.save()
+
+        # Update the auction's highest bid
+        try:
+            auction = Auction.objects.get(item=item)
+            auction.highest_bid = bid
+            auction.save()
+        except Auction.DoesNotExist:
+            pass  # No auction found for the item
+
+        return bid
+
+
 # ✅ Serializer for Auction Model
 class AuctionSerializer(serializers.ModelSerializer):
-    highest_bid = BidSerializer(read_only=True)  # Nested serializer for read-only display
-    item = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all())  # Allow setting item
-
+    item = ItemSerializer()
+    highest_bid = serializers.PrimaryKeyRelatedField(queryset=Bid.objects.all(), allow_null=True)  # Nested serializer for read-only display
     class Meta:
         model = Auction
         fields = '__all__'  # Includes 'item', 'highest_bid', 'winner', 'auction_status'
+
+    def create(self, validated_data):
+        item_data = validated_data.pop('item')  # Extract item data
+        item = Item.objects.create(**item_data)  # Create Item object
+        auction = Auction.objects.create(item=item, **validated_data)  # Create Auction object
+        return auction
 
 class ReviewSerializer(serializers.ModelSerializer):
     reviewer_name = serializers.CharField(source='reviewer.username', read_only=True)  # Get reviewer's username
@@ -69,3 +106,5 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ['id', 'reviewer', 'reviewer_name', 'seller', 'seller_name', 'rating', 'review_text', 'review_date']
         read_only_fields = ['review_date']
+
+
