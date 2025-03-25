@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from api.models import User, Category, Item, Watchlist, Bid, Auction, Review
 from rest_framework import status
 
-from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer, AuctionSerializer, ReviewSerializer
+from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer, AuctionSerializer, ReviewSerializer, ItemSerializer
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -192,3 +192,30 @@ class SellerReviewsListView(generics.ListAPIView):
     def get_queryset(self):
         seller_id = self.kwargs.get('seller_id')  # Get seller ID from the URL
         return Review.objects.filter(seller_id=seller_id)  # Fetch reviews for this seller
+    
+@api_view(["GET"])
+def item_search_view(request):
+    query = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "").strip()  
+    seller = request.GET.get("seller","").strip()
+    sort_by = request.GET.get("sort_by") 
+    order = request.GET.get("order", "asc")  
+
+    results = Item.objects.filter(title__icontains=query) if query else Item.objects.all()
+
+    if category:
+        results = results.filter(category__category_name__iexact=category) 
+    if seller:
+        results = results.filter(seller__username__iexact=seller) 
+
+    
+    if sort_by:
+        if order == "desc":
+            sort_by = f"-{sort_by}"  
+        results = results.order_by(sort_by)
+
+    serializer = ItemSerializer(results, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
