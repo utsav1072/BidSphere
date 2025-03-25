@@ -22,4 +22,5 @@ urlpatterns = [
     path('auctions/delete/<int:auction_id>/', views.delete_auction, name='delete-auction'),
     path('reviews/seller/<int:seller_id>/', views.SellerReviewsListView.as_view(), name='seller-reviews'),
     path("items/search/", views.item_search_view, name="item_search"),
+    path("create-bid/", views.create_bid, name="create-bid")
 ]
