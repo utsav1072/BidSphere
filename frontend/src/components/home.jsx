@@ -22,7 +22,7 @@ function Home() {
         async function getAllcategory() {
             try {
                 const response = await axios.get("http://127.0.0.1:8000/api/category/");
-                setCategory(response.data.category_name); 
+                setCategory(response.data.categories); 
             } catch (error) {
                 console.log(error);
             }
@@ -68,26 +68,25 @@ function Home() {
                 {/* Scrollable Auction Items */}
                 <div ref={auctionRef} className="flex overflow-x-auto gap-6 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full">
                     {items.map((item) => (
-                        <div
-                        key={item.id}
-                        className="h-90 w-1/3 min-w-[30%] border-2 border-gray-300 rounded-2xl shadow-lg cursor-pointer hover:shadow-2xl transition-all snap-center overflow-hidden relative"
-                        onClick={() => navigate(`/auction/item/${item.id}`)}
-                       >
-                            {/* Background Image */}
-                            <img
-                            src={item.image_url}
-                            alt={item.title}
-                            className="absolute top-0 left-0 w-full h-full object-cover"
+                        <div key={item.id} className="bg-white shadow-lg rounded-xl p-4 border min-w-[25%] md:min-w-[30%] lg:min-w-[22%] snap-center">
+                            <img 
+                                src={item.image_url} 
+                                alt={item.title} 
+                                className="w-full h-60 object-cover rounded-lg mb-4"
                             />
-                        
-                            {/* Title at the Bottom */}
-                            <div className="absolute h-12 bottom-0 left-0 w-full bg-amber-50 bg-opacity-90 text-black px-4 py-2 text-center font-semibold text-lg tracking-wide">
-                                {item.title}
-                            </div>
-                      </div>
-                      
+                            <h2 className="text-xl font-semibold">{item.title}</h2>
+                            <p className="text-gray-600">{item.description}</p>
+                            <p className="text-blue-600 font-bold mt-2">Starting Price: ₹{item.starting_price}</p>
+                            <button 
+                                className="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-all" 
+                                onClick={() => navigate(`/auction/item/${item.id}`)}
+                            >
+                                View Details
+                            </button>
+                        </div>
                     ))}
                 </div>
+
 
                 {/* Right Arrow */}
                 <button
@@ -106,33 +105,43 @@ function Home() {
             <div className="relative px-10">
                 {/* Left Arrow */}
                 <button
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 z-10"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-300 p-2 rounded-full shadow-md hover:bg-gray-400 z-10 transition-all"
                     onClick={() => scrollLeft(categoryRef)}
                 >
                     <AiOutlineLeft size={24} />
                 </button>
 
                 {/* Scrollable Auction Categories */}
-                <div ref={categoryRef} className="flex overflow-x-auto gap-6 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full">
-                    {category.map((cat, index) => (
-                        <div
-                            key={index}
-                            className="h-40 w-1/3 min-w-[30%] border-2 border-gray-300 rounded-2xl shadow-md bg-white flex items-center justify-center cursor-pointer hover:shadow-xl transition-all snap-center"
-                            onClick={() => navigate(`/auction/category/${cat}`)}
-                        >
-                            <span className="text-gray-400">{cat}</span>
-                        </div>
-                    ))}
+                <div
+                    ref={categoryRef}
+                    className="flex overflow-x-auto gap-6 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full px-4 py-4"
+                >
+                {category.map((cat) => (
+                    <div
+                        key={cat.id}
+                        className="h-40 w-1/4 min-w-[25%] border-2 border-gray-200 rounded-2xl shadow-lg 
+                        bg-gradient-to-br from-blue-200 via-indigo-100 to-purple-50
+                        flex items-center justify-center cursor-pointer 
+                        hover:shadow-2xl hover:scale-110 transition-all duration-300 ease-in-out transform snap-center"
+                        onClick={() => navigate(`/auction/category/${cat.category_name.toLowerCase()}`)}
+                    >
+                        <span className="text-black text-xl tracking-wide drop-shadow-md">
+                            {cat.category_name}
+                        </span>
+                    </div>
+                ))}
+
                 </div>
 
                 {/* Right Arrow */}
                 <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 z-10"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-300 p-2 rounded-full shadow-md hover:bg-gray-400 z-10 transition-all"
                     onClick={() => scrollRight(categoryRef)}
                 >
                     <AiOutlineRight size={24} />
                 </button>
             </div>
+
         </>
     );
 }

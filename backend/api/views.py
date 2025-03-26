@@ -81,8 +81,8 @@ def userProfile(request):
 @api_view(['GET'])
 def getCategory(request):
     if request.method == 'GET':
-        categories = Category.objects.values_list('category_name', flat=True)
-        return Response({'category_name': list(categories)}, status=status.HTTP_200_OK)
+        categories = Category.objects.all().values('id', 'category_name')  # Fetch id and name
+        return Response({"categories": list(categories)}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def getItems(request):
@@ -196,6 +196,7 @@ class SellerReviewsListView(generics.ListAPIView):
 @api_view(["GET"])
 def item_search_view(request):
     query = request.GET.get("q", "").strip()
+    itemid = request.GET.get("itemid", "").strip()
     category = request.GET.get("category", "").strip()  
     seller = request.GET.get("seller","").strip()
     sort_by = request.GET.get("sort_by") 
@@ -207,12 +208,17 @@ def item_search_view(request):
         results = results.filter(category__category_name__iexact=category) 
     if seller:
         results = results.filter(seller__username__iexact=seller) 
+    
+    if itemid:
+        results = results.filter(id__iexact=itemid)
 
     
     if sort_by:
         if order == "desc":
             sort_by = f"-{sort_by}"  
         results = results.order_by(sort_by)
+    
+
 
     serializer = ItemSerializer(results, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)

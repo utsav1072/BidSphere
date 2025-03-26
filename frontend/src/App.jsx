@@ -10,6 +10,7 @@ import Watchlist from "./components/watchlist";
 import Aitemdetail from "./components/aitemdetail";
 import Allitems from "./components/allitems";
 import Singlecat from "./components/singlecat";
+import Itemforbid from "./components/itemforbid";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/auction/all-items" element={<Allitems/>}/>
                 <Route path="/login" element={<Signup/>}/>
                 <Route path="/auction/category/:cat" element={<Singlecat />} />
+                <Route path="/itemforbid" element={<Itemforbid/>} />
             </Routes>
             <Footer/>
     </div>
