@@ -41,7 +41,7 @@ const Allitems = () => {
           />
           <h2 className="text-xl font-semibold">{item.title}</h2>
           <p className="text-gray-600">{item.description}</p>
-          <p className="text-blue-600 font-bold mt-2">Starting Price: ₹{item.starting_price}</p>
+          <p className="text-blue-600 font-bold mt-2">Price: ₹{item.current_price}</p>
           <button className="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-all" onClick={() => navigate(`/auction/item/${item.id}`)}>
             View Details
           </button>

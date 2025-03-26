@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from api.models import User, Category, Item, Watchlist, Bid, Auction, Review
 from rest_framework import status
 
-from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer, AuctionSerializer, ReviewSerializer, ItemSerializer, BidSerializer
+from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer, AuctionSerializer, ReviewSerializer, ItemSerializer, BidSerializer, UserSerializer
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -223,14 +223,44 @@ def item_search_view(request):
     serializer = ItemSerializer(results, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(["GET"])
+def auction_search_view(request):
+    query = request.GET.get("q", "").strip()
+
+    results = Auction.objects.filter(item__exact=query) if query else Auction.objects.all()    
+
+
+    serializer = AuctionSerializer(results, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+def user_search_view(request):
+    query = request.GET.get("q", "").strip()
+
+    results = User.objects.filter(item__exact=query) if query else {}   
+
+
+    serializer = UserSerializer(results, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_bid(request):
-    serializer = BidSerializer(data=request.data)
+    data = request.data.copy() 
+    data['bidder'] = request.user.id 
+
+    serializer = BidSerializer(data=data)
     
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def get_bid_by_id(request, bid_id):
+    bid = get_object_or_404(Bid, id=bid_id)
+    serializer = BidSerializer(bid)
+    return JsonResponse(serializer.data, safe=False)
+
 
