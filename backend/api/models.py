@@ -66,3 +66,4 @@ class Watchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     added_on = models.DateTimeField(default=timezone.now)
+    

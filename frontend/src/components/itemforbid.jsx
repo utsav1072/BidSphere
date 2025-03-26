@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import axiosInstance from '../utils/axiosInstance'
 
 const ItemForBid = () => {
   const authTokens = useSelector((state) => state.auth.authTokens);
@@ -8,13 +9,13 @@ const ItemForBid = () => {
   const [cat,setCat] = useState([]);
 
   async function getcat() {
-    const response = await axios.get("http://127.0.0.1:8000/api/category/");
+    const response = await axiosInstance.get("http://127.0.0.1:8000/api/category/");
     setCat(response.data.categories);
     console.log(response.data.categories);
   }
 
   async function getuserid() {
-    const response = await axios.get("http://127.0.0.1:8000/api/test/", {
+    const response = await axiosInstance.get("http://127.0.0.1:8000/api/test/", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authTokens.access}`,
