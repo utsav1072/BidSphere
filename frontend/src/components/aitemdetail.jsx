@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IoMdAdd } from "react-icons/io";
 import axios from "axios";
 import axiosInstance from "../utils/axiosInstance";
@@ -12,6 +12,7 @@ const Aitemdetail = () => {
   const [highestBidId, setHighestBidId] = useState(null);
   const [highestBidder, setHighestBidder] = useState("");
   const authTokens = useSelector((state) => state.auth.authTokens);
+  const [toggle, setToggle] = useState(false);
 
   async function handleBid() {
     try {
@@ -28,6 +29,7 @@ const Aitemdetail = () => {
           },
         }
       );
+      setToggle(!toggle);
     } catch (error) {
       console.error("Error placing bid:", error.response ? error.response.data : error);
     }
@@ -43,7 +45,7 @@ const Aitemdetail = () => {
       }
     }
     getItem();
-  }, [id]);
+  }, [id,toggle]);
 
   useEffect(() => {
     async function getHighestBid() {
@@ -121,7 +123,7 @@ const Aitemdetail = () => {
               value={bidAmount}
               onChange={(e) => setBidAmount(e.target.value)}
               required
-              step="0.01"
+              step={item.bid_increment}
               className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               min="0"
             />

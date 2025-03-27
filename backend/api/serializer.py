@@ -94,6 +94,8 @@ class AuctionSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         item_data = validated_data.pop('item')  # Extract item data
+        starting_price = item_data.get('starting_price', 0)
+        item_data['current_price'] = starting_price
         item = Item.objects.create(**item_data)  # Create Item object
         auction = Auction.objects.create(item=item, **validated_data)  # Create Auction object
         return auction
