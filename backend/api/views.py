@@ -13,6 +13,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
+
 
 
 
@@ -262,5 +264,20 @@ def get_bid_by_id(request, bid_id):
     bid = get_object_or_404(Bid, id=bid_id)
     serializer = BidSerializer(bid)
     return JsonResponse(serializer.data, safe=False)
+
+def format_time(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+
+def auction_timer(request, item_id):
+    try:
+        item = Item.objects.get(id=item_id)
+        time_left = max(0, int((item.end_time - now()).total_seconds()))  # Avoid negatives
+        formatted_time = format_time(time_left)
+        return JsonResponse({"time_left": formatted_time})
+    except Item.DoesNotExist:
+        return JsonResponse({"error": "Item not found"}, status=404)
 
 

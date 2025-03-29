@@ -26,4 +26,5 @@ urlpatterns = [
     path("auction/search/", views.auction_search_view, name="auction_search"),
     path("bids/<int:bid_id>/", views.get_bid_by_id, name="get_bid_by_id"),
     path("user/", views.user_search_view, name="get_username"),
+    path('auction-timer/<int:item_id>/', views.auction_timer, name='auction-timer'),
 ]
