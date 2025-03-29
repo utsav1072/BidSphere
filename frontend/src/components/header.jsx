@@ -103,7 +103,7 @@ function Header() {
                             <li>
                                 <button
                                     className="px-4 py-2 text-white border border-yellow-400 rounded-full hover:bg-yellow-500 transition duration-300"
-                                    onClick={() => dispatch(logoutUser())}
+                                    onClick={() => {dispatch(logoutUser());navigate('/');}}
                                 >
                                     Logout
                                 </button>

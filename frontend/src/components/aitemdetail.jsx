@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { IoMdAdd } from "react-icons/io";
 import axios from "axios";
 import axiosInstance from "../utils/axiosInstance";
 import { useSelector } from "react-redux";
 
 const Aitemdetail = () => {
+  const user = useSelector(state => state.auth.user);
   const { id } = useParams();
   const [item, setItem] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
@@ -45,7 +46,7 @@ const Aitemdetail = () => {
       }
     }
     getItem();
-  }, [id,toggle]);
+  }, [id, toggle]);
 
   useEffect(() => {
     async function getHighestBid() {
@@ -53,21 +54,23 @@ const Aitemdetail = () => {
         const response = await axiosInstance.get(`/auction/search/?q=${id}`);
         if (response.data.length > 0) {
           setHighestBidId(response.data[0].highest_bid);
+          console.log(response.data[0].highest_bid);
         }
       } catch (error) {
         console.error("Error fetching highest bid:", error.response ? error.response.data : error);
       }
     }
     getHighestBid();
-  }, [id]);
+  }, [id, toggle]);
 
   useEffect(() => {
     if (highestBidId) {
       async function getHighestBidder() {
         try {
           const response = await axiosInstance.get(`/bids/${highestBidId}/`);
-          const user = await axiosInstance.get(`user/?q=${response.data.bidder}`)
+          const user = await axiosInstance.get(`user/?q=${response.data.bidder}`);
           setHighestBidder(user.data[0].username);
+          console.log(user.data[0].username);
         } catch (error) {
           console.error("Error fetching highest bidder:", error.response ? error.response.data : error);
         }
@@ -76,6 +79,18 @@ const Aitemdetail = () => {
     }
   }, [highestBidId]);
 
+  function handleinc() {
+    setBidAmount((prev) => 
+      (prev ? Number(prev) : Number(item.current_price)) + Number(item.bid_increment)
+    );
+  }
+  
+  function handledec() {
+    setBidAmount((prev) => {
+      const newBid = (prev ? Number(prev) : Number(item.current_price)) - Number(item.bid_increment);
+      return newBid >= item.current_price ? newBid : item.current_price; // Prevent going below the base price
+    });
+  }
   
 
   if (!item) {
@@ -100,11 +115,7 @@ const Aitemdetail = () => {
             <span className="font-semibold">Time Left:</span> --
           </p>
           <p>
-            <span className="font-semibold">Buy Now Price:</span> --
-          </p>
-          <p>
-            <span className="font-semibold">Current Price:</span>
-            {item.current_price}
+            <span className="font-semibold">Current Price:</span> {item.current_price}
           </p>
         </div>
         <div className="flex justify-between bg-gray-100 p-4 rounded-lg shadow-sm">
@@ -116,28 +127,32 @@ const Aitemdetail = () => {
           </div>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-6 mt-8">
-          <div>
-            <input
-              type="number"
-              name="bid_amount"
-              value={bidAmount}
-              onChange={(e) => setBidAmount(e.target.value)}
-              required
-              step={item.bid_increment}
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              min="0"
-            />
-            <button
-              className="h-12 w-44 bg-blue-500 text-white font-semibold rounded-2xl shadow-lg hover:bg-blue-600 transition-all"
-              onClick={handleBid}
-            >
-              Place Your Bid!
-            </button>
-          </div>
-          <span className="text-gray-500 font-semibold text-lg">Or</span>
-          <button className="h-12 w-44 bg-green-500 text-white font-semibold rounded-2xl shadow-lg hover:bg-green-600 transition-all">
-            Buy Now!
-          </button>
+          {user ? (
+            <div className="flex items-center justify-center gap-4">
+              <button className="text-red-500 font-semibold" onClick={handledec}>decrement the price</button>
+              <input
+                type="number"
+                name="bid_amount"
+                value={bidAmount}
+                onChange={(e) => setBidAmount(e.target.value)}
+                required
+                readOnly
+                step={item.bid_increment}
+                placeholder={`${bidAmount || item.current_price}`}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                min="0"
+              />
+              <button className="text-green-500 font-semibold" onClick={handleinc}>increment the price</button>
+              <button
+                className="h-12 w-60 bg-blue-500 text-white font-semibold rounded-2xl shadow-lg hover:bg-blue-600 transition-all duration-300"
+                onClick={handleBid}
+              >
+                Place Your Bid!
+              </button>
+            </div>
+          ) : (
+            <div className="text-red-500 font-medium text-lg">Please login to place a bid</div>
+          )}
         </div>
       </div>
     </div>
