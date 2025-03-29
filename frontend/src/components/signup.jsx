@@ -6,6 +6,8 @@ import { loginUser, registerUser } from "../features/authentication/authSlice";
 import { useNavigate } from "react-router-dom";
 
 function Signup() {
+    const [show, setShow] = useState(false);
+      
     const [regPassword2, setRegPassword2] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -87,6 +89,11 @@ function Signup() {
                             <a href="#" className="text-green-500 hover:underline" onClick={() => setStatus(1)}> Login</a>
                         </p>
                     </form>
+                </div>
+            )}
+            {show && (
+                <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg animate-fadeInOut">
+                  ✅ Login Successful!
                 </div>
             )}
         </div>

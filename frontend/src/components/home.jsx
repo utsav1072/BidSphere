@@ -1,14 +1,25 @@
 import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 
 function Home() {
+    const notification = useSelector(state => state.auth.notification);
+    const [showNotification, setShowNotification] = useState(true);
     const [items, setItems] = useState([]);
     const [category,setCategory] = useState([]);
     const navigate = useNavigate();
     const auctionRef = useRef(null);
     const categoryRef = useRef(null);
+
+    useEffect(() => {
+        if (notification) {
+            setShowNotification(true);
+            const timer = setTimeout(() => setShowNotification(false), 2000);
+            return () => clearTimeout(timer); // Cleanup timeout
+        }
+    }, [notification]);
 
     useEffect(() => {
         async function getAllItems() {
@@ -140,10 +151,10 @@ function Home() {
                 >
                     <AiOutlineRight size={24} />
                 </button>
-            </div>
-
+            </div>            
         </>
     );
 }
+
 
 export default Home;
