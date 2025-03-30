@@ -4,6 +4,7 @@ import { IoMdAdd } from "react-icons/io";
 import axios from "axios";
 import axiosInstance from "../utils/axiosInstance";
 import { useSelector } from "react-redux";
+import AuctionRelativeTimer from "./time-counter";
 
 const Aitemdetail = () => {
   const user = useSelector(state => state.auth.user);
@@ -31,6 +32,19 @@ const Aitemdetail = () => {
         }
       );
       setToggle(!toggle);
+
+      // Fetch latest highest bid and highest bidder immediately
+      const response = await axiosInstance.get(`/auction/search/?q=${id}`);
+      if (response.data.length > 0) {
+        setHighestBidId(response.data[0].highest_bid);
+        console.log(response)
+        
+        const bidResponse = await axiosInstance.get(`/bids/${response.data[0].highest_bid}/`);
+        const userResponse = await axiosInstance.get(`user/?q=${bidResponse.data.bidder}`);
+        setHighestBidder(userResponse.data[0].username);
+        console.log(userResponse.data[0].username);
+        console.log(bidResponse)
+      }
     } catch (error) {
       console.error("Error placing bid:", error.response ? error.response.data : error);
     }
@@ -54,7 +68,6 @@ const Aitemdetail = () => {
         const response = await axiosInstance.get(`/auction/search/?q=${id}`);
         if (response.data.length > 0) {
           setHighestBidId(response.data[0].highest_bid);
-          console.log(response.data[0].highest_bid);
         }
       } catch (error) {
         console.error("Error fetching highest bid:", error.response ? error.response.data : error);
@@ -70,14 +83,13 @@ const Aitemdetail = () => {
           const response = await axiosInstance.get(`/bids/${highestBidId}/`);
           const user = await axiosInstance.get(`user/?q=${response.data.bidder}`);
           setHighestBidder(user.data[0].username);
-          console.log(user.data[0].username);
         } catch (error) {
           console.error("Error fetching highest bidder:", error.response ? error.response.data : error);
         }
       }
       getHighestBidder();
     }
-  }, [highestBidId]);
+  }, [highestBidId, toggle]);
 
   function handleinc() {
     setBidAmount((prev) => 
@@ -88,11 +100,10 @@ const Aitemdetail = () => {
   function handledec() {
     setBidAmount((prev) => {
       const newBid = (prev ? Number(prev) : Number(item.current_price)) - Number(item.bid_increment);
-      return newBid >= item.current_price ? newBid : item.current_price; // Prevent going below the base price
+      return newBid >= item.current_price ? newBid : item.current_price;
     });
   }
   
-
   if (!item) {
     return <p className="text-center text-lg font-semibold text-gray-500">Loading item details...</p>;
   }
@@ -111,9 +122,9 @@ const Aitemdetail = () => {
           </button>
         </div>
         <div className="mb-6 text-lg text-gray-700">
-          <p className="mb-2">
-            <span className="font-semibold">Time Left:</span> --
-          </p>
+          <h1 className="mb-2">
+            <span className="font-semibold">Time Left:</span> <AuctionRelativeTimer itemId={id} />
+          </h1>
           <p>
             <span className="font-semibold">Current Price:</span> {item.current_price}
           </p>
@@ -127,7 +138,7 @@ const Aitemdetail = () => {
           </div>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-6 mt-8">
-          {user ? (
+          {user && user.username !== highestBidder? (
             <div className="flex items-center justify-center gap-4">
               <button className="text-red-500 font-semibold" onClick={handledec}>decrement the price</button>
               <input
@@ -150,8 +161,10 @@ const Aitemdetail = () => {
                 Place Your Bid!
               </button>
             </div>
-          ) : (
-            <div className="text-red-500 font-medium text-lg">Please login to place a bid</div>
+          ) : !user?(
+            <div className="text-red-500 font-medium text-lg">Pls Login to Place a Bid</div>
+          ):(
+            <div className="text-red-500 font-medium text-lg">wait for a new bid to get placed</div>
           )}
         </div>
       </div>
