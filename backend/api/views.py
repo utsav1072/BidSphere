@@ -114,6 +114,25 @@ def getWatchlist(request):
     return Response({'watchlist': data}, status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+def add_to_watchlist(request):
+    item_id = request.data.get("item_id")  # Use DRF's request.data instead of json.loads
+
+    if not item_id:
+        return Response({"error": "Item ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    item = get_object_or_404(Item, id=item_id)
+
+    if Watchlist.objects.filter(user=request.user, item=item).exists():
+        return Response({"message": "Item is already in your watchlist"}, status=status.HTTP_200_OK)
+
+    watchlist_entry = Watchlist.objects.create(user=request.user, item=item, added_on=now())
+
+    return Response({"message": "Item added to watchlist", "watchlist_id": watchlist_entry.id}, status=status.HTTP_201_CREATED)
+
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_bids(request):
