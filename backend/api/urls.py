@@ -27,4 +27,5 @@ urlpatterns = [
     path("bids/<int:bid_id>/", views.get_bid_by_id, name="get_bid_by_id"),
     path("user/", views.user_search_view, name="get_username"),
     path('auction-timer/<int:item_id>/', views.auction_timer, name='auction-timer'),
+    path('add/to/watchlist/', views.add_to_watchlist, name = "add_to_watchlist"),
 ]
