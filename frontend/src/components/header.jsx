@@ -45,7 +45,7 @@ function Header() {
         { name: "Home", slug: "/", active: true },
         { name: "Profile", slug: "/profile", active: user },
         { name: "Watchlist", slug: "/watchlist", active: user },
-        { name: "Categories", slug: "/categories", active: true },
+        { name: "Add item for auction", slug: "/itemforbid", active: user },
         { name: "Login", slug: "/login", active: !user },
     ];
 

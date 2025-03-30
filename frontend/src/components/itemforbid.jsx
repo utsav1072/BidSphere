@@ -30,6 +30,17 @@ const ItemForBid = () => {
     getcat();
   },[]);
 
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    return now.toISOString().slice(0, 16); // Format as YYYY-MM-DDTHH:MM
+  };
+  
+  const getEndDateTime = () => {
+    const now = new Date();
+    now.setHours(now.getHours() + 24); // Add 24 hours
+    return now.toISOString().slice(0, 16);
+  };
+  
   const [formData, setFormData] = useState({
     item: {
       title: "",
@@ -37,16 +48,17 @@ const ItemForBid = () => {
       starting_price: "",
       bid_increment: "",
       category: "",
-      start_time: "",
-      end_time: "",
+      start_time: getCurrentDateTime(), // Set start time to current time
+      end_time: getEndDateTime(), // Set end time to 24 hours later
       image_url: "",
       status: "active",
-      seller: Number(userId)
+      seller: Number(userId),
     },
     auction_status: "ongoing",
     highest_bid: null,
     winner: null,
   });
+  
 
   // Handle input change
   const handleChange = (e) => {
@@ -155,32 +167,6 @@ const ItemForBid = () => {
               ))}
 
             </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block font-medium text-gray-700">Start Time:</label>
-              <input
-                type="datetime-local"
-                name="start_time"
-                value={formData.item.start_time}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium text-gray-700">End Time:</label>
-              <input
-                type="datetime-local"
-                name="end_time"
-                value={formData.item.end_time}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
           </div>
 
           <div>

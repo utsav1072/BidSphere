@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
+import { setWinner } from "../features/authentication/winnerSlice";
+import { useDispatch } from "react-redux";
 
 const AuctionRelativeTimer = ({ itemId }) => {
   const [endTime, setEndTime] = useState("");
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchEndTime = async () => {
@@ -15,10 +18,16 @@ const AuctionRelativeTimer = ({ itemId }) => {
     };
 
     fetchEndTime();
-    const interval = setInterval(fetchEndTime, 1000); // Refresh every minute
 
-    return () => clearInterval(interval);
-  }, [itemId]);
+    if(endTime !== "00:00:00"){
+      const interval = setInterval(fetchEndTime, 1000); // Refresh every minute
+      return () => clearInterval(interval);
+    }
+    else{
+      dispatch(setWinner(true));
+    }
+
+  }, [endTime]);
 
   return <p>{endTime}</p>;
 };
