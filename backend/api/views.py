@@ -239,7 +239,7 @@ def auction_search_view(request):
 def user_search_view(request):
     query = request.GET.get("q", "").strip()
 
-    results = User.objects.filter(item__exact=query) if query else {}   
+    results = User.objects.filter(id__exact=query) if query else {}  
 
 
     serializer = UserSerializer(results, many=True)
