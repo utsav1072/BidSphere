@@ -9,6 +9,11 @@ const storedTokens = localStorage.getItem("authTokens")
 
 const storedUser = storedTokens ? jwtDecode(storedTokens.access) : null;
 
+export const winner = createAsyncThunk(
+    "auth/winner",
+
+);
+
 // Async thunk for login
 export const loginUser = createAsyncThunk(
     "auth/loginUser",

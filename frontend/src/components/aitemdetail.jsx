@@ -5,9 +5,11 @@ import axios from "axios";
 import axiosInstance from "../utils/axiosInstance";
 import { useSelector } from "react-redux";
 import AuctionRelativeTimer from "./time-counter";
+import Swal from "sweetalert2";
 
 const Aitemdetail = () => {
   const user = useSelector(state => state.auth.user);
+  const winner = useSelector(state => state.winner.winner);
   const { id } = useParams();
   const [item, setItem] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
@@ -15,6 +17,19 @@ const Aitemdetail = () => {
   const [highestBidder, setHighestBidder] = useState("");
   const authTokens = useSelector((state) => state.auth.authTokens);
   const [toggle, setToggle] = useState(false);
+
+  async function handlewatchlist(){
+    const response = await axiosInstance.post('add/to/watchlist/',
+      {
+        item_id : id,
+      },{
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authTokens?.access}`,
+      },
+    })
+    console.log(response);
+  }
 
   async function handleBid() {
     try {
@@ -32,21 +47,20 @@ const Aitemdetail = () => {
         }
       );
       setToggle(!toggle);
-
-      // Fetch latest highest bid and highest bidder immediately
-      const response = await axiosInstance.get(`/auction/search/?q=${id}`);
-      if (response.data.length > 0) {
-        setHighestBidId(response.data[0].highest_bid);
-        console.log(response)
-        
-        const bidResponse = await axiosInstance.get(`/bids/${response.data[0].highest_bid}/`);
-        const userResponse = await axiosInstance.get(`user/?q=${bidResponse.data.bidder}`);
-        setHighestBidder(userResponse.data[0].username);
-        console.log(userResponse.data[0].username);
-        console.log(bidResponse)
-      }
+      Swal.fire({
+        title: "Success!",
+        text: "Your bid has been placed successfully!",
+        icon: "success",
+        confirmButtonText: "OK"
+      });
     } catch (error) {
       console.error("Error placing bid:", error.response ? error.response.data : error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to place bid. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
     }
   }
 
@@ -116,7 +130,7 @@ const Aitemdetail = () => {
       <div className="flex-1 m-4 p-4 flex flex-col justify-between">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold text-gray-800">{item.title}</h1>
-          <button className="text-blue-500 hover:text-blue-600 font-semibold transition-all flex items-center">
+          <button className="text-blue-500 hover:text-blue-600 font-semibold transition-all flex items-center" onClick={handlewatchlist}>
             <IoMdAdd className="text-xl mr-1" />
             Add to Watchlist
           </button>
@@ -129,41 +143,30 @@ const Aitemdetail = () => {
             <span className="font-semibold">Current Price:</span> {item.current_price}
           </p>
         </div>
-        <div className="flex justify-between bg-gray-100 p-4 rounded-lg shadow-sm">
-          <div className="text-lg font-semibold text-blue-600">
-            CURRENT BID PRICE - {item.current_price}
-          </div>
-          <div className="text-lg font-semibold text-blue-600">
-            CURRENT HIGHEST BIDDER - {highestBidder || "N/A"}
-          </div>
+        {winner?(
+          <div> Winner : {highestBidder}</div>
+        ):(
+          <div className="flex justify-between bg-gray-100 p-4 rounded-lg shadow-sm">
+            <div className="text-lg font-semibold text-blue-600">
+              CURRENT BID PRICE - {item.current_price}
+            </div>
+            <div className="text-lg font-semibold text-blue-600">
+              CURRENT HIGHEST BIDDER - {highestBidder || "N/A"}
+            </div>
         </div>
+        )}
+
         <div className="flex flex-col md:flex-row items-center gap-6 mt-8">
-          {user && user.username !== highestBidder? (
+          {user && user.username !== highestBidder ? (
             <div className="flex items-center justify-center gap-4">
               <button className="text-red-500 font-semibold" onClick={handledec}>decrement the price</button>
-              <input
-                type="number"
-                name="bid_amount"
-                value={bidAmount}
-                onChange={(e) => setBidAmount(e.target.value)}
-                required
-                readOnly
-                step={item.bid_increment}
-                placeholder={`${bidAmount || item.current_price}`}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                min="0"
-              />
+              <input type="number" name="bid_amount" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} required readOnly step={item.bid_increment} placeholder={`${bidAmount || item.current_price}`} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" min="0" />
               <button className="text-green-500 font-semibold" onClick={handleinc}>increment the price</button>
-              <button
-                className="h-12 w-60 bg-blue-500 text-white font-semibold rounded-2xl shadow-lg hover:bg-blue-600 transition-all duration-300"
-                onClick={handleBid}
-              >
-                Place Your Bid!
-              </button>
+              <button className="h-12 w-60 bg-blue-500 text-white font-semibold rounded-2xl shadow-lg hover:bg-blue-600 transition-all duration-300" onClick={handleBid}>Place Your Bid!</button>
             </div>
-          ) : !user?(
+          ) : !user ? (
             <div className="text-red-500 font-medium text-lg">Pls Login to Place a Bid</div>
-          ):(
+          ) : (
             <div className="text-red-500 font-medium text-lg">wait for a new bid to get placed</div>
           )}
         </div>

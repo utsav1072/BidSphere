@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 function Profile() {
     const navigate = useNavigate();
+    const user = useSelector((state) => state.auth.user);
     return (
         <div className="flex justify-between items-start p-10 bg-gray-100 min-h-screen">
             {/* Profile Card */}
@@ -8,8 +10,8 @@ function Profile() {
                 <div className="border-2 rounded-full h-40 w-40 mx-auto flex items-center justify-center overflow-hidden bg-gray-200">
                     <img alt="Profile" className="h-full w-full object-cover"/>
                 </div>
-                <div className="text-center mt-4 text-lg font-semibold text-gray-800">UserName</div>
-                <div className="text-center text-gray-500">user_id</div>
+                <div className="text-center mt-4 text-lg font-semibold text-gray-800">User Name:{user.username}</div>
+                <div className="text-center text-gray-500">user_email : {user.email}</div>
                 <div className="bg-blue-500 hover:bg-blue-600 p-2 mt-4 rounded-2xl text-white text-center font-medium cursor-pointer transition duration-300">
                     Edit Profile
                 </div>
