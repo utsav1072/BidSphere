@@ -28,4 +28,6 @@ urlpatterns = [
     path("user/", views.user_search_view, name="get_username"),
     path('auction-timer/<int:item_id>/', views.auction_timer, name='auction-timer'),
     path('add/to/watchlist/', views.add_to_watchlist, name = "add_to_watchlist"),
+    #path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot-password'),
+    #path('reset-password/<str:uidb64>/<str:token>/', views.ResetPasswordView.as_view(), name='reset-password'),
 ]

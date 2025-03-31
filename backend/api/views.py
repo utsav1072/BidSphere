@@ -1,19 +1,26 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from api.models import User, Category, Item, Watchlist, Bid, Auction, Review
-from rest_framework import status
-
-from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer, AuctionSerializer, ReviewSerializer, ItemSerializer, BidSerializer, UserSerializer
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework import generics
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+
+from rest_framework import status, generics
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.views import APIView
+
+from api.models import User, Category, Item, Watchlist, Bid, Auction, Review
+from api.serializer import (
+    MyTokenObtainPairSerializer, RegisterSerializer, 
+    AuctionSerializer, ReviewSerializer, ItemSerializer, 
+    BidSerializer, UserSerializer
+)
+
 
 
 
@@ -54,7 +61,7 @@ def testEndPoint(request):
     elif request.method == 'POST':
         full_name = request.data.get('full_name')
         bio = request.data.get('bio')
-        image = request.data.get('image')
+        image = request.FILES.get('image')
 
         user_profile = request.user.profile
         if full_name:
@@ -300,3 +307,55 @@ def auction_timer(request, item_id):
         return JsonResponse({"error": "Item not found"}, status=404)
 
 
+#class ForgotPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Generate token
+        token_generator = PasswordResetTokenGenerator()
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = token_generator.make_token(user)
+
+        reset_url = f"{settings.FRONTEND_URL}/reset-password/{uidb64}/{token}/"
+
+        # Send email
+        send_mail(
+            "Password Reset Request",
+            f"Click the link to reset your password: {reset_url}",
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+
+        return Response({"message": "Password reset link sent to email."}, status=status.HTTP_200_OK)
+
+
+#class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, ValueError):
+            return Response({"error": "Invalid token or user."}, status=status.HTTP_400_BAD_REQUEST)
+
+        token_generator = PasswordResetTokenGenerator()
+        if not token_generator.check_token(user, token):
+            return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        new_password = request.data.get("password")
+        confirm_password = request.data.get("password2")
+
+        if new_password != confirm_password:
+            return Response({"error": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+        return Response({"message": "Password reset successful."}, status=status.HTTP_200_OK)
