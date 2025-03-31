@@ -13,6 +13,7 @@ import Aitemdetail from "./components/aitemdetail";
 import Allitems from "./components/allitems";
 import Singlecat from "./components/singlecat";
 import Itemforbid from "./components/itemforbid";
+import Editprofile from "./components/editprofile";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/watchlist" element={<Watchlist />} /> 
           <Route path="/itemforbid" element={<Itemforbid />} />
+          <Route path="/edit-profile" element={<Editprofile/>}/>
         </Route>
       </Routes>
       <Footer />

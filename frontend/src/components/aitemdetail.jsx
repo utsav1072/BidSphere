@@ -143,33 +143,59 @@ const Aitemdetail = () => {
             <span className="font-semibold">Current Price:</span> {item.current_price}
           </p>
         </div>
-        {winner?(
-          <div> Winner : {highestBidder}</div>
-        ):(
-          <div className="flex justify-between bg-gray-100 p-4 rounded-lg shadow-sm">
-            <div className="text-lg font-semibold text-blue-600">
-              CURRENT BID PRICE - {item.current_price}
-            </div>
-            <div className="text-lg font-semibold text-blue-600">
-              CURRENT HIGHEST BIDDER - {highestBidder || "N/A"}
-            </div>
-        </div>
-        )}
+        {winner ? (
+  <div> Winner : {highestBidder}</div>
+) : (
+  <>
+    <div className="flex justify-between bg-gray-100 p-4 rounded-lg shadow-sm">
+      <div className="text-lg font-semibold text-blue-600">
+        CURRENT BID PRICE - {item.current_price}
+      </div>
+      <div className="text-lg font-semibold text-blue-600">
+        CURRENT HIGHEST BIDDER - {highestBidder || "N/A"}
+      </div>
+    </div>
 
-        <div className="flex flex-col md:flex-row items-center gap-6 mt-8">
-          {user && user.username !== highestBidder ? (
-            <div className="flex items-center justify-center gap-4">
-              <button className="text-red-500 font-semibold" onClick={handledec}>decrement the price</button>
-              <input type="number" name="bid_amount" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} required readOnly step={item.bid_increment} placeholder={`${bidAmount || item.current_price}`} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" min="0" />
-              <button className="text-green-500 font-semibold" onClick={handleinc}>increment the price</button>
-              <button className="h-12 w-60 bg-blue-500 text-white font-semibold rounded-2xl shadow-lg hover:bg-blue-600 transition-all duration-300" onClick={handleBid}>Place Your Bid!</button>
-            </div>
-          ) : !user ? (
-            <div className="text-red-500 font-medium text-lg">Pls Login to Place a Bid</div>
-          ) : (
-            <div className="text-red-500 font-medium text-lg">wait for a new bid to get placed</div>
-          )}
+    <div className="flex flex-col md:flex-row items-center gap-6 mt-8">
+      {user && user.username !== highestBidder ? (
+        <div className="flex items-center justify-center gap-4">
+          <button className="text-red-500 font-semibold" onClick={handledec}>
+            decrement the price
+          </button>
+          <input
+            type="number"
+            name="bid_amount"
+            value={bidAmount}
+            onChange={(e) => setBidAmount(e.target.value)}
+            required
+            readOnly
+            step={item.bid_increment}
+            placeholder={`${bidAmount || item.current_price}`}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            min="0"
+          />
+          <button className="text-green-500 font-semibold" onClick={handleinc}>
+            increment the price
+          </button>
+          <button
+            className="h-12 w-60 bg-blue-500 text-white font-semibold rounded-2xl shadow-lg hover:bg-blue-600 transition-all duration-300"
+            onClick={handleBid}
+          >
+            Place Your Bid!
+          </button>
         </div>
+      ) : !user ? (
+        <div className="text-red-500 font-medium text-lg">
+          Pls Login to Place a Bid
+        </div>
+      ) : (
+        <div className="text-red-500 font-medium text-lg">
+          wait for a new bid to get placed
+        </div>
+      )}
+    </div>
+  </>
+)}
       </div>
     </div>
   );

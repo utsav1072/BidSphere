@@ -54,16 +54,15 @@ def getRoutes(request):
 @permission_classes([IsAuthenticated])
 def testEndPoint(request):
     if request.method == 'GET':
-        user_profile = request.user.username
-        userId = request.user.id
-        name = user_profile if user_profile else 'Anonymous'  # Assuming 'full_name' is the username
-        return Response({'name': name,'userId': userId}, status=status.HTTP_200_OK)
+        user_profile = request.user
+        serializer = UserSerializer(user_profile)
+        return Response({'data':serializer.data}, status=status.HTTP_200_OK)
     elif request.method == 'POST':
         full_name = request.data.get('full_name')
         bio = request.data.get('bio')
         image = request.FILES.get('image')
 
-        user_profile = request.user.profile
+        user_profile = request.user
         if full_name:
             user_profile.full_name = full_name
         if bio:

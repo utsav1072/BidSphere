@@ -10,7 +10,7 @@ class User(AbstractUser):
     created_at = models.DateTimeField(default=timezone.now)
     full_name = models.CharField(max_length=1000, default="Anonymous User")
     bio = models.CharField(max_length=100, blank=True, null=True)
-    image = models.ImageField(upload_to="user_images",null=True)
+    image = models.ImageField(upload_to="user_images",default = 'image.png' ,null=True)
     verified = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
