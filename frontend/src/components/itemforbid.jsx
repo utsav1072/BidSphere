@@ -11,7 +11,6 @@ const ItemForBid = () => {
   async function getcat() {
     const response = await axiosInstance.get("http://127.0.0.1:8000/api/category/");
     setCat(response.data.categories);
-    console.log(response.data.categories);
   }
 
   async function getuserid() {
@@ -21,8 +20,8 @@ const ItemForBid = () => {
         Authorization: `Bearer ${authTokens.access}`,
       },
     });
-    setuserId(response.data.userId);
-    console.log(userId)
+    setuserId(response.data.data.id);
+    console.log(response.data.data.id)
   }
 
   useEffect(() =>{
