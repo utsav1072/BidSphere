@@ -27,7 +27,7 @@ function Profile() {
                 <div className="border-2 rounded-full h-40 w-40 mx-auto flex items-center justify-center overflow-hidden bg-gray-200">
                     <img alt="Profile" src= {`http://127.0.0.1:8000/${user.image}`} className="h-full w-full object-cover"/>
                 </div>
-                <div className="text-center mt-4 text-lg font-semibold text-gray-800">User Name:{user.full_name}</div>
+                <div className="text-center mt-4 text-lg font-semibold text-gray-800">User Name:{user.username}</div>
                 <div className="text-center text-gray-500">user_email : {user.email}</div>
                 <button className="bg-blue-500 hover:bg-blue-600 p-2 mt-4 rounded-2xl text-white text-center font-medium cursor-pointer transition duration-300" onClick={() => navigate('/edit-profile')}>
                     Edit Profile
