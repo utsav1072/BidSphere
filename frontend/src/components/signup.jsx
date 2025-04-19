@@ -15,6 +15,8 @@ function Signup() {
     const [regPassword, setRegPassword] = useState("");
     const [username, setUsername] = useState("");
     const [status, setStatus] = useState(1);
+    const [forgotEmail,setForgotEmail] = useState("");
+    const [forgotMessage, setForgotMessage] = useState('');
     
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -25,6 +27,33 @@ function Signup() {
         dispatch(loginUser({ email, password }));
         navigate("/");
     };
+
+    const handleforgot = (e) => {
+        setStatus(2);
+    };
+
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+        setForgotMessage('');
+        try {
+        const response = await fetch('http://localhost:8000/api/forgot-password/', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: forgotEmail }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+            setForgotMessage(data.message || 'Password reset link sent to your email.');
+        } else {
+            setForgotMessage(data.error || 'Something went wrong.');
+        }
+        } catch (error) {
+            setForgotMessage('Network error.');
+        }
+    };
+
 
     // Handle Registration
     const handleRegister = (e) => {
@@ -66,7 +95,7 @@ function Signup() {
                             <label className="flex items-center">
                                 <input type="checkbox" className="mr-2 accent-blue-500" />Remember me
                             </label>
-                            <a href="#" className="text-blue-500 hover:underline">Forgot Password?</a>
+                            <button  className="text-blue-500 hover:underline" onClick={() => handleforgot()}>Forgot Password?</button>
                         </div>
                         <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">Login</button>
                         <p className="text-center text-sm text-gray-600">
@@ -75,7 +104,7 @@ function Signup() {
                         </p>
                     </form>
                 </div>
-            ) : (
+            ) : status === 0 ? (
                 // ✅ REGISTRATION FORM
                 <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 border border-gray-200 mt-6">
                     <h1 className="text-3xl font-extrabold text-center mb-6 text-gray-800">REGISTRATION</h1>
@@ -103,6 +132,36 @@ function Signup() {
                         </p>
                     </form>
                 </div>
+            ):(
+                <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 border border-gray-200 mt-6">
+                <h1 className="text-3xl font-extrabold text-center mb-6 text-gray-800">Forgot Password</h1>
+                <form className="space-y-5" onSubmit={handleForgotPassword}>
+                  <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50 focus-within:border-yellow-500">
+                    <FaUser className="text-gray-500 mr-3" />
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      required
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      className="w-full bg-transparent focus:outline-none"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-yellow-600 text-white py-3 rounded-lg hover:bg-yellow-700 transition font-semibold"
+                  >
+                    Send Reset Link
+                  </button>
+                  <p className="text-center text-sm text-gray-600">
+                    Remembered your password?
+                    <a href="#" className="text-blue-500 hover:underline" onClick={() => setStatus(1)}> Login</a>
+                  </p>
+                  {forgotMessage && (
+                    <div className="mt-4 text-yellow-600 text-center">{forgotMessage}</div>
+                  )}
+                </form>
+              </div>
             )}
             {show && (
                 <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg animate-fadeInOut">

@@ -79,7 +79,7 @@ const Aitemdetail = () => {
   useEffect(() => {
     async function getHighestBid() {
       try {
-        const response = await axiosInstance.get(`/auction/search/?q=${id}`);
+        const response = await axios.get(`/auction/search/?q=${id}`);
         if (response.data.length > 0) {
           setHighestBidId(response.data[0].highest_bid);
         }
@@ -94,8 +94,8 @@ const Aitemdetail = () => {
     if (highestBidId) {
       async function getHighestBidder() {
         try {
-          const response = await axiosInstance.get(`/bids/${highestBidId}/`);
-          const user = await axiosInstance.get(`user/?q=${response.data.bidder}`);
+          const response = await axios.get(`/bids/${highestBidId}/`);
+          const user = await axios.get(`user/?q=${response.data.bidder}`);
           setHighestBidder(user.data[0].username);
         } catch (error) {
           console.error("Error fetching highest bidder:", error.response ? error.response.data : error);

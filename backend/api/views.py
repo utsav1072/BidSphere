@@ -318,7 +318,7 @@ def auction_timer(request, item_id):
         return JsonResponse({"error": "Item not found"}, status=404)
 
 
-#class ForgotPasswordView(APIView):
+class ForgotPasswordView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -347,7 +347,7 @@ def auction_timer(request, item_id):
         return Response({"message": "Password reset link sent to email."}, status=status.HTTP_200_OK)
 
 
-#class ResetPasswordView(APIView):
+class ResetPasswordView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token):
