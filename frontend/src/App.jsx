@@ -14,6 +14,8 @@ import Allitems from "./components/allitems";
 import Singlecat from "./components/singlecat";
 import Itemforbid from "./components/itemforbid";
 import Editprofile from "./components/editprofile";
+import Useraucsummary from "./components/useraucsummary";
+import Participated_bids from "./components/participated_bids";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
           <Route path="/watchlist" element={<Watchlist />} /> 
           <Route path="/itemforbid" element={<Itemforbid />} />
           <Route path="/edit-profile" element={<Editprofile/>}/>
+          <Route path="/profile/auction-summary" element={<Useraucsummary/>}/>
+          <Route path="/profile/participated-bids" element={<Participated_bids/>}/>
         </Route>
       </Routes>
       <Footer />

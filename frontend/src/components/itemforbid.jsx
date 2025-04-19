@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import axiosInstance from '../utils/axiosInstance'
+import { useNavigate } from "react-router-dom";
 
 const ItemForBid = () => {
   const authTokens = useSelector((state) => state.auth.authTokens);
   const [userId,setuserId] = useState(null);
   const [cat,setCat] = useState([]);
+  const navigate = useNavigate();
+  
+  
 
   async function getcat() {
     const response = await axiosInstance.get("http://127.0.0.1:8000/api/category/");
@@ -86,6 +90,7 @@ const ItemForBid = () => {
       });
       console.log("Success:", response.data);
       alert("Auction item submitted successfully!");
+      navigate(`/auction/item/${response.data.id}`)
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Failed to submit auction item.");

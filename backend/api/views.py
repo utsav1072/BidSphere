@@ -61,6 +61,8 @@ def testEndPoint(request):
         full_name = request.data.get('full_name')
         bio = request.data.get('bio')
         image = request.FILES.get('image')
+        address = request.data.get('address')
+        phone = request.data.get('phone_number')
 
         user_profile = request.user
         if full_name:
@@ -69,6 +71,10 @@ def testEndPoint(request):
             user_profile.bio = bio
         if image:
             user_profile.image = image
+        if address:
+            user_profile.address = address
+        if phone:
+            user_profile.phone_number = phone
 
         user_profile.save()
 
@@ -144,12 +150,17 @@ def add_to_watchlist(request):
 def get_user_bids(request):
     user = request.user
     bids = Bid.objects.filter(bidder=user).select_related('item')
-
+    
     data = [
         {
             'bid_id': bid.id,
-            'item_id': bid.item.id,
-            'item_title': bid.item.title,
+            'item': {
+                'id': bid.item.id,
+                'title': bid.item.title,
+                'description': bid.item.description,
+                'current_price': bid.item.current_price,
+                'image_url': bid.item.image_url,  # assuming `image` is an ImageField
+            },
             'bid_amount': bid.bid_amount,
             'bid_time': bid.bid_time
         }
@@ -157,6 +168,7 @@ def get_user_bids(request):
     ]
 
     return Response({'bids': data}, status=status.HTTP_200_OK)
+
 
 
 
@@ -234,7 +246,7 @@ def item_search_view(request):
     if category:
         results = results.filter(category__category_name__iexact=category) 
     if seller:
-        results = results.filter(seller__username__iexact=seller) 
+        results = results.filter(seller__id__iexact=seller) 
     
     if itemid:
         results = results.filter(id__iexact=itemid)
