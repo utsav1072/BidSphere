@@ -7,7 +7,6 @@ import Header from './components/header';
 import Home from './components/home';
 import Footer from './components/footer';
 import Profile from './components/profile';
-import About from "./components/about";
 import Watchlist from "./components/watchlist";
 import Aitemdetail from "./components/aitemdetail";
 import Allitems from "./components/allitems";
@@ -16,6 +15,7 @@ import Itemforbid from "./components/itemforbid";
 import Editprofile from "./components/editprofile";
 import Useraucsummary from "./components/useraucsummary";
 import Participated_bids from "./components/participated_bids";
+import Forgotpassword from "./components/forgotpassword";
 
 function App() {
   return (
@@ -24,11 +24,11 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
         <Route path="/login" element={<Signup />} />
         <Route path="/auction/all-items" element={<Allitems />} />
         <Route path="/auction/category/:cat" element={<Singlecat />} />
         <Route path="/auction/item/:id" element={<Aitemdetail />} />
+        <Route path="/reset-password/:uidb64/:token" element={<Forgotpassword />} />
 
         {/* Protected Routes (Requires Login) */}
         <Route element={<ProtectedRoute />}>
