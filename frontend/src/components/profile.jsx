@@ -29,6 +29,8 @@ function Profile() {
                 </div>
                 <div className="text-center mt-4 text-lg font-semibold text-gray-800">User Name:{user.username}</div>
                 <div className="text-center text-gray-500">user_email : {user.email}</div>
+                <div className="text-center text-gray-500">user_address : {user.address}</div>
+                <div className="text-center text-gray-500">user_phone number : {user.phone_number}</div>
                 <button className="bg-blue-500 hover:bg-blue-600 p-2 mt-4 rounded-2xl text-white text-center font-medium cursor-pointer transition duration-300" onClick={() => navigate('/edit-profile')}>
                     Edit Profile
                 </button>
@@ -45,10 +47,10 @@ function Profile() {
                 <div className="w-full h-40 rounded-2xl border border-gray-300 bg-white shadow-md p-6 flex items-center text-lg font-medium text-gray-800 hover:shadow-lg transition" onClick={() => {navigate('/itemforbid')}}>
                     Place an Item for Bid
                 </div>
-                <div className="w-full h-40 rounded-2xl border border-gray-300 bg-white shadow-md p-6">
+                <div className="w-full h-40 rounded-2xl border border-gray-300 bg-white shadow-md p-6" onClick={() => navigate("/profile/participated-bids")}>
                     <h1 className="text-xl font-semibold text-gray-800">Participated Bids</h1>
                 </div>
-                <div className="w-full h-40 rounded-2xl border border-gray-300 bg-white shadow-md p-6">
+                <div className="w-full h-40 rounded-2xl border border-gray-300 bg-white shadow-md p-6" onClick={() => navigate("/profile/auction-summary")}>
                     <h1 className="text-xl font-semibold text-gray-800">Overall Summary</h1>
                 </div>
             </div>

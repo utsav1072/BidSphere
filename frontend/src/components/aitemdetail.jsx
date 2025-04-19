@@ -144,7 +144,7 @@ const Aitemdetail = () => {
           </p>
         </div>
         {winner ? (
-  <div> Winner : {highestBidder}</div>
+  <div> Winner : {highestBidder?highestBidder:"No winner"}</div>
 ) : (
   <>
     <div className="flex justify-between bg-gray-100 p-4 rounded-lg shadow-sm">

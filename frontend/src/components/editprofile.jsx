@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 const EditProfile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [fullname,setFullname] = useState('');
+  const [address,setAddress] = useState('');
+  const [phone,setPhone] = useState('');
 
   const authTokens = useSelector((state) => state.auth.authTokens);
 
@@ -23,6 +25,8 @@ const EditProfile = () => {
     const formData = new FormData();
     formData.append("full_name", fullname);
     formData.append("image", selectedFile); // Append the selected file
+    formData.append("address", address);
+    formData.append("phone_number", phone);
 
     try {
       const response = await axiosInstance.post('/test/', formData, {
@@ -63,6 +67,26 @@ const EditProfile = () => {
               accept="image/*"
               onChange={handleFileChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium">Address</label>
+            <input 
+              type="text" 
+              placeholder="Enter your address"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium">Phone Number</label>
+            <input 
+              type="text" 
+              placeholder="Enter your Phone Number"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
 

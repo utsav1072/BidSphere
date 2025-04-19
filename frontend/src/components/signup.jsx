@@ -30,8 +30,21 @@ function Signup() {
     const handleRegister = (e) => {
         e.preventDefault();
         // Dispatch registration action (create one in your Redux slice)
-        dispatch(registerUser({ email: regEmail, password: regPassword, username, password2: regPassword2 }));  
-        navigate("/login");
+        dispatch(registerUser({
+            email: regEmail,
+            password: regPassword,
+            username,
+            password2: regPassword2
+          }))
+          .unwrap()
+          .then((response) => {
+            setStatus(1);          // or handle success
+          })
+          .catch((error) => {
+            console.error('Registration failed:', error);
+            setStatus(0);          // or handle error
+          });
+          
     };
 
     return (
