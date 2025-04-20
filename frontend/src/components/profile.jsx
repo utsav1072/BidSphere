@@ -1,16 +1,46 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { FiEdit2, FiPlusCircle, FiBox, FiTrendingUp, FiAward } from "react-icons/fi";
 
 function Profile() {
+  const [balance, setBalance] = useState(0);
+  const [addbalance, setAddbalance] = useState(0);
   const [user, setUser] = useState({});
+  const [showAddMoneyModal, setShowAddMoneyModal] = useState(false);
+  const [amountInput, setAmountInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const authTokens = useSelector((state) => state.auth.authTokens);
 
-  useEffect(() => {
-    async function getUser() {
+  async function handelMoney() {
+    const formData = new FormData();
+    formData.append("balance", addbalance);
+    setAddbalance(0);
+
+    try {
+      setIsLoading(true);
+      await axiosInstance.post('/test/', formData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.access}`,
+        },
+      });
+      getUser();
+    } catch (error) {
+      if (error.response) {
+        alert(`Failed to add money: ${error.response.data.message || 'Unknown error'}`);
+      } else {
+        alert("Failed to add money. Please check your internet connection.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function getUser() {
+    try {
       const response = await axiosInstance.get('/test/', {
         headers: {
           "Content-Type": "application/json",
@@ -18,9 +48,27 @@ function Profile() {
         },
       });
       setUser(response.data.data);
+      setBalance(response.data.data.balance);
+    } catch (error) {
+      // Optionally handle error
     }
+  }
+
+  useEffect(() => {
     getUser();
   }, [authTokens]);
+
+  const handleAmountChange = (e) => {
+    const value = e.target.value;
+    if (value === '' || (Number(value) > 0 && Number(value) <= 1000000)) {
+      setAmountInput(value);
+    }
+  };
+
+  const handleAddMoney = useCallback(async (amount) => {
+    setAddbalance(balance + amount);
+    await handelMoney();
+  }, [balance, authTokens]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100/60 via-white/80 to-purple-100/60 flex items-center justify-center py-12 px-4">
@@ -48,11 +96,11 @@ function Profile() {
           <div className="mt-10 w-full text-center">
             <div className="text-blue-800 font-medium text-lg">Current Balance:</div>
             <div className="text-2xl font-bold text-blue-700 mt-1 mb-3">
-              ₹{user.balance || "0.00"}
+              ₹{balance}
             </div>
             <button
               className="flex items-center gap-2 mx-auto bg-blue-100 hover:bg-blue-200 text-blue-700 px-5 py-2 rounded-lg font-semibold shadow transition"
-              // onClick={...} // Add logic for adding money
+              onClick={() => setShowAddMoneyModal(true)}
             >
               <FiPlusCircle />
               Add Money
@@ -79,6 +127,52 @@ function Profile() {
           />
         </div>
       </div>
+
+      {/* Add Money Modal */}
+      {showAddMoneyModal && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          tabIndex="-1"
+        >
+          <div className="bg-white rounded-xl shadow-xl p-8 w-80 flex flex-col gap-4" role="document">
+            <h2 id="modal-title" className="text-xl font-bold text-blue-800 mb-2">Add Money</h2>
+            <input
+              type="number"
+              min="1"
+              value={amountInput}
+              onChange={handleAmountChange}
+              placeholder="Enter amount"
+              className="border border-blue-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              disabled={isLoading}
+            />
+            <div className="flex gap-4 mt-4">
+              <button
+                className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition"
+                onClick={() => {
+                  handleAddMoney(Number(amountInput));
+                  setShowAddMoneyModal(false);
+                  setAmountInput('');
+                }}
+                disabled={!amountInput || Number(amountInput) <= 0 || isLoading}
+              >
+                {isLoading ? 'Adding...' : 'Add'}
+              </button>
+              <button
+                className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-300 transition"
+                onClick={() => {
+                  setShowAddMoneyModal(false);
+                  setAmountInput('');
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
