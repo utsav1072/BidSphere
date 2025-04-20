@@ -11,12 +11,12 @@ const ItemForBid = () => {
   const navigate = useNavigate();
 
   async function getcat() {
-    const response = await axios.get("http://127.0.0.1:8000/api/category/");
+    const response = await axios.get("https://auctionhub.pythonanywhere.com/api/category/");
     setCat(response.data.categories);
   }
 
   async function getuserid() {
-    const response = await axiosInstance.get("http://127.0.0.1:8000/api/test/", {
+    const response = await axiosInstance.get("https://auctionhub.pythonanywhere.com/api/test/", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authTokens.access}`,
@@ -90,7 +90,7 @@ const ItemForBid = () => {
     e.preventDefault();
 
     try {
-      const response = await axiosInstance.post("http://127.0.0.1:8000/api/auctions/create/", formData, {
+      const response = await axiosInstance.post("https://auctionhub.pythonanywhere.com/api/auctions/create/", formData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens.access}`,

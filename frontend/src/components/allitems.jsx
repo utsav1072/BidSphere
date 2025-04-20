@@ -10,7 +10,7 @@ const Allitems = () => {
   useEffect(() => {
     async function getallitems() {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/items/`);
+        const response = await axios.get(`https://auctionhub.pythonanywhere.com/api/items/`);
         setItems(response.data.items);
       } catch (error) {
         console.log(error);

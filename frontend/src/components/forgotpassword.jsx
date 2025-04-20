@@ -11,7 +11,7 @@ const ResetPassword = () => {
     e.preventDefault();
     setMessage('');
     try {
-      const response = await fetch(`http://localhost:8000/api/reset-password/${uidb64}/${token}/`, {
+      const response = await fetch(`https://auctionhub.pythonanywhere.com/api/reset-password/${uidb64}/${token}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

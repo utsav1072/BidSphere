@@ -11,7 +11,7 @@ const Useraucsummary = () => {
   useEffect(() => {
     async function getAllItems() {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/items/search/?seller=${user.user_id}`);
+        const response = await axios.get(`https://auctionhub.pythonanywhere.com/api/items/search/?seller=${user.user_id}`);
         setItems(response.data);
       } catch (error) {
         console.log(error);

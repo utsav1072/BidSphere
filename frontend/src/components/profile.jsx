@@ -28,7 +28,7 @@ function Profile() {
                 <div className="border-4 border-blue-100 rounded-full h-40 w-40 mx-auto flex items-center justify-center overflow-hidden bg-gray-100 shadow">
                     <img
                         alt="Profile"
-                        src={`http://127.0.0.1:8000/${user.image}`}
+                        src={`https://auctionhub.pythonanywhere.com/${user.image}`}
                         className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                 </div>
