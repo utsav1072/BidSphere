@@ -77,98 +77,159 @@ function Signup() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-            {status === 1 ? (
-                // ✅ LOGIN FORM
-                <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 border border-gray-200">
-                    <h1 className="text-3xl font-extrabold text-center mb-6 text-gray-800">LOGIN</h1>
-                    <form className="space-y-5" onSubmit={handleLogin}>
-                        <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50 focus-within:border-blue-500">
-                            <FaUser className="text-gray-500 mr-3" />
-                            <input type="email" placeholder="Email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-transparent focus:outline-none" />
-                        </div>
-                        <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50 focus-within:border-blue-500">
-                            <FaLock className="text-gray-500 mr-3" />
-                            <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-transparent focus:outline-none" />
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                            <label className="flex items-center">
-                                <input type="checkbox" className="mr-2 accent-blue-500" />Remember me
-                            </label>
-                            <button  className="text-blue-500 hover:underline" onClick={() => handleforgot()}>Forgot Password?</button>
-                        </div>
-                        <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">Login</button>
-                        <p className="text-center text-sm text-gray-600">
-                            Don't have an account? 
-                            <a href="#" className="text-blue-500 hover:underline" onClick={() => setStatus(2)}> Register</a>
-                        </p>
-                    </form>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 p-4 sm:p-6">
+        {status === 1 ? (
+            // LOGIN FORM
+            <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl p-10 border border-gray-100 transition-all duration-300">
+            <h1 className="text-4xl font-bold text-center mb-8 text-blue-700 tracking-tight">LOGIN</h1>
+            <form className="space-y-6" onSubmit={handleLogin}>
+                <div className="flex items-center border border-gray-200 rounded-xl p-4 bg-gray-50 focus-within:border-blue-400 transition">
+                <FaUser className="text-blue-400 mr-3" />
+                <input
+                    type="email"
+                    placeholder="Email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent focus:outline-none text-gray-700"
+                />
                 </div>
-            ) : status === 0 ? (
-                // ✅ REGISTRATION FORM
-                <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 border border-gray-200 mt-6">
-                    <h1 className="text-3xl font-extrabold text-center mb-6 text-gray-800">REGISTRATION</h1>
-                    <form className="space-y-5" onSubmit={handleRegister}>
-                        <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50 focus-within:border-green-500">
-                            <FaUser className="text-gray-500 mr-3" />
-                            <input type="text" placeholder="Username" required value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-transparent focus:outline-none" />
-                        </div>
-                        <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50 focus-within:border-green-500">
-                            <IoIosMail className="text-gray-500 mr-3" />
-                            <input type="email" placeholder="Email" required value={regEmail} onChange={(e) => setRegEmail(e.target.value)} className="w-full bg-transparent focus:outline-none" />
-                        </div>
-                        <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50 focus-within:border-green-500">
-                            <FaLock className="text-gray-500 mr-3" />
-                            <div>
-                            <input type="password" placeholder="Password" required value={regPassword} onChange={(e) => setRegPassword(e.target.value)} className="w-full bg-transparent focus:outline-none" />
-                            <input type="password" placeholder="Re-enter Password" required value={regPassword2} onChange={(e) => setRegPassword2(e.target.value)} className="w-full bg-transparent focus:outline-none" />
-                            </div>
-                            
-                        </div>
-                        <button type="submit" className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-semibold">Register</button>
-                        <p className="text-center text-sm text-gray-600">
-                            Already have an account? 
-                            <a href="#" className="text-green-500 hover:underline" onClick={() => setStatus(1)}> Login</a>
-                        </p>
-                    </form>
+                <div className="flex items-center border border-gray-200 rounded-xl p-4 bg-gray-50 focus-within:border-blue-400 transition">
+                <FaLock className="text-blue-400 mr-3" />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent focus:outline-none text-gray-700"
+                />
                 </div>
-            ):(
-                <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 border border-gray-200 mt-6">
-                <h1 className="text-3xl font-extrabold text-center mb-6 text-gray-800">Forgot Password</h1>
-                <form className="space-y-5" onSubmit={handleForgotPassword}>
-                  <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50 focus-within:border-yellow-500">
-                    <FaUser className="text-gray-500 mr-3" />
+                <div className="flex justify-between text-sm text-gray-500">
+                <label className="flex items-center">
+                    <input type="checkbox" className="mr-2 accent-blue-500" />Remember me
+                </label>
+                <button type="button" className="text-blue-600 hover:underline font-medium" onClick={() => handleforgot()}>
+                    Forgot Password?
+                </button>
+                </div>
+                <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition font-semibold shadow-md"
+                >
+                Login
+                </button>
+                <p className="text-center text-sm text-gray-500">
+                Don't have an account?
+                <a href="#" className="text-blue-600 hover:underline font-medium ml-1" onClick={() => setStatus(0)}>
+                    Register
+                </a>
+                </p>
+            </form>
+            </div>
+        ) : status === 0 ? (
+            // REGISTRATION FORM
+            <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl p-10 border border-gray-100 mt-6 transition-all duration-300">
+            <h1 className="text-4xl font-bold text-center mb-8 text-green-700 tracking-tight">REGISTRATION</h1>
+            <form className="space-y-6" onSubmit={handleRegister}>
+                <div className="flex items-center border border-gray-200 rounded-xl p-4 bg-gray-50 focus-within:border-green-400 transition">
+                <FaUser className="text-green-400 mr-3" />
+                <input
+                    type="text"
+                    placeholder="Username"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full bg-transparent focus:outline-none text-gray-700"
+                />
+                </div>
+                <div className="flex items-center border border-gray-200 rounded-xl p-4 bg-gray-50 focus-within:border-green-400 transition">
+                <IoIosMail className="text-green-400 mr-3" />
+                <input
+                    type="email"
+                    placeholder="Email"
+                    required
+                    value={regEmail}
+                    onChange={(e) => setRegEmail(e.target.value)}
+                    className="w-full bg-transparent focus:outline-none text-gray-700"
+                />
+                </div>
+                <div className="flex items-center border border-gray-200 rounded-xl p-4 bg-gray-50 focus-within:border-green-400 transition">
+                <FaLock className="text-green-400 mr-3" />
+                <div className="w-full flex flex-col gap-2">
                     <input
-                      type="email"
-                      placeholder="Enter your email"
-                      required
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                      className="w-full bg-transparent focus:outline-none"
+                    type="password"
+                    placeholder="Password"
+                    required
+                    value={regPassword}
+                    onChange={(e) => setRegPassword(e.target.value)}
+                    className="w-full bg-transparent focus:outline-none text-gray-700"
                     />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-yellow-600 text-white py-3 rounded-lg hover:bg-yellow-700 transition font-semibold"
-                  >
-                    Send Reset Link
-                  </button>
-                  <p className="text-center text-sm text-gray-600">
-                    Remembered your password?
-                    <a href="#" className="text-blue-500 hover:underline" onClick={() => setStatus(1)}> Login</a>
-                  </p>
-                  {forgotMessage && (
-                    <div className="mt-4 text-yellow-600 text-center">{forgotMessage}</div>
-                  )}
-                </form>
-              </div>
-            )}
-            {show && (
-                <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg animate-fadeInOut">
-                  ✅ Login Successful!
+                    <input
+                    type="password"
+                    placeholder="Re-enter Password"
+                    required
+                    value={regPassword2}
+                    onChange={(e) => setRegPassword2(e.target.value)}
+                    className="w-full bg-transparent focus:outline-none text-gray-700"
+                    />
                 </div>
-            )}
+                </div>
+                <button
+                type="submit"
+                className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition font-semibold shadow-md"
+                >
+                Register
+                </button>
+                <p className="text-center text-sm text-gray-500">
+                Already have an account?
+                <a href="#" className="text-green-600 hover:underline font-medium ml-1" onClick={() => setStatus(1)}>
+                    Login
+                </a>
+                </p>
+            </form>
+            </div>
+        ) : (
+            // FORGOT PASSWORD FORM
+            <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl p-10 border border-gray-100 mt-6 transition-all duration-300">
+            <h1 className="text-4xl font-bold text-center mb-8 text-yellow-700 tracking-tight">Forgot Password</h1>
+            <form className="space-y-6" onSubmit={handleForgotPassword}>
+                <div className="flex items-center border border-gray-200 rounded-xl p-4 bg-gray-50 focus-within:border-yellow-400 transition">
+                <FaUser className="text-yellow-400 mr-3" />
+                <input
+                    type="email"
+                    placeholder="Enter your email"
+                    required
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    className="w-full bg-transparent focus:outline-none text-gray-700"
+                />
+                </div>
+                <button
+                type="submit"
+                className="w-full bg-yellow-500 text-white py-3 rounded-xl hover:bg-yellow-600 transition font-semibold shadow-md"
+                >
+                Send Reset Link
+                </button>
+                <p className="text-center text-sm text-gray-500">
+                Remembered your password?
+                <a href="#" className="text-blue-600 hover:underline font-medium ml-1" onClick={() => setStatus(1)}>
+                    Login
+                </a>
+                </p>
+                {forgotMessage && (
+                <div className="mt-4 text-yellow-600 text-center font-medium">{forgotMessage}</div>
+                )}
+            </form>
+            </div>
+        )}
+        {show && (
+            <div className="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl animate-fadeInOut text-lg font-semibold z-50">
+            ✅ Login Successful!
+            </div>
+        )}
         </div>
+
     );
 }
 

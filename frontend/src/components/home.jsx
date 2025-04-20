@@ -1,14 +1,14 @@
 import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import axios from "axios";
 
 function Home() {
     const notification = useSelector(state => state.auth.notification);
     const [showNotification, setShowNotification] = useState(true);
     const [items, setItems] = useState([]);
-    const [category,setCategory] = useState([]);
+    const [category, setCategory] = useState([]);
     const navigate = useNavigate();
     const auctionRef = useRef(null);
     const categoryRef = useRef(null);
@@ -17,7 +17,7 @@ function Home() {
         if (notification) {
             setShowNotification(true);
             const timer = setTimeout(() => setShowNotification(false), 2000);
-            return () => clearTimeout(timer); // Cleanup timeout
+            return () => clearTimeout(timer);
         }
     }, [notification]);
 
@@ -25,7 +25,7 @@ function Home() {
         async function getAllItems() {
             try {
                 const response = await axios.get("http://127.0.0.1:8000/api/items/");
-                setItems(response.data.items); 
+                setItems(response.data.items);
             } catch (error) {
                 console.log(error);
             }
@@ -33,63 +33,75 @@ function Home() {
         async function getAllcategory() {
             try {
                 const response = await axios.get("http://127.0.0.1:8000/api/category/");
-                setCategory(response.data.categories); 
+                setCategory(response.data.categories);
             } catch (error) {
                 console.log(error);
             }
         }
         getAllItems();
-        getAllcategory()
+        getAllcategory();
     }, []);
 
     const scrollLeft = (ref) => {
         if (ref.current) {
-            ref.current.scrollBy({ left: -ref.current.clientWidth / 3, behavior: "smooth" });
+            ref.current.scrollBy({ left: -ref.current.clientWidth / 2.5, behavior: "smooth" });
         }
     };
 
     const scrollRight = (ref) => {
         if (ref.current) {
-            ref.current.scrollBy({ left: ref.current.clientWidth / 3, behavior: "smooth" });
+            ref.current.scrollBy({ left: ref.current.clientWidth / 2.5, behavior: "smooth" });
         }
     };
 
     return (
-        <>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pb-20">
             {/* Featured Auctions */}
-            <div className="flex justify-between items-center px-10 py-6 border-b border-gray-300">
-                <h1 className="text-2xl font-semibold text-gray-800">Featured Auctions</h1>
+            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-200 bg-white/80 backdrop-blur-lg">
+                <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-500 drop-shadow">
+                    Featured Auctions
+                </h1>
                 <button
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl shadow-md transition-all"
+                    className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-6 py-3 rounded-xl shadow-lg font-semibold transition-all"
                     onClick={() => navigate(`/auction/all-items`)}
                 >
                     View All
                 </button>
             </div>
 
-            <div className="relative px-10">
+            <div className="relative px-10 py-8">
                 {/* Left Arrow */}
                 <button
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 z-10"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white shadow-lg p-2 rounded-full border border-blue-100 hover:bg-blue-100 transition z-10"
                     onClick={() => scrollLeft(auctionRef)}
                 >
-                    <AiOutlineLeft size={24} />
+                    <AiOutlineLeft size={28} className="text-blue-600" />
                 </button>
 
                 {/* Scrollable Auction Items */}
-                <div ref={auctionRef} className="flex overflow-x-auto gap-6 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full">
+                <div
+                    ref={auctionRef}
+                    className="flex overflow-x-auto gap-8 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full py-2"
+                >
                     {items.map((item) => (
-                        <div key={item.id} className="bg-white shadow-lg rounded-xl p-4 border min-w-[25%] md:min-w-[30%] lg:min-w-[22%] snap-center">
-                            <img 
-                                src={item.image_url} 
-                                alt={item.title} 
-                                className="w-full h-60 object-cover rounded-lg mb-4"
-                            />
-                            <h2 className="text-xl font-semibold">{item.title}</h2>
-                            <p className="text-gray-600">{item.description}</p>
-                            <p className="text-blue-600 font-bold mt-2">Price: ₹{item.current_price}</p>
-                            <button 
-                                className="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-all" 
+                        <div
+                            key={item.id}
+                            className="bg-white/90 shadow-xl rounded-2xl p-6 border min-w-[70vw] sm:min-w-[40vw] md:min-w-[30vw] lg:min-w-[22vw] snap-center flex flex-col items-center transition-all hover:shadow-2xl hover:-translate-y-2"
+                        >
+                            <div className="relative w-full h-56 mb-4 rounded-xl overflow-hidden">
+                                <img
+                                    src={`http://127.0.0.1:8000/media/${item.image_url}`}
+                                    alt={item.title}
+                                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                                />
+                                <span className="absolute top-3 right-3 bg-white/80 px-3 py-1 rounded-full text-xs text-blue-700 font-semibold shadow">
+                                    ₹{item.current_price}
+                                </span>
+                            </div>
+                            <h2 className="text-xl font-bold text-gray-800 mb-2 line-clamp-1">{item.title}</h2>
+                            <p className="text-gray-600 text-sm mb-2 line-clamp-2">{item.description}</p>
+                            <button
+                                className="mt-4 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 shadow transition-all"
                                 onClick={() => navigate(`/auction/item/${item.id}`)}
                             >
                                 View Details
@@ -98,63 +110,62 @@ function Home() {
                     ))}
                 </div>
 
-
                 {/* Right Arrow */}
                 <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 z-10"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white shadow-lg p-2 rounded-full border border-blue-100 hover:bg-blue-100 transition z-10"
                     onClick={() => scrollRight(auctionRef)}
                 >
-                    <AiOutlineRight size={24} />
+                    <AiOutlineRight size={28} className="text-blue-600" />
                 </button>
             </div>
 
             {/* Auction Categories */}
-            <div className="flex justify-between items-center px-10 py-6 border-b border-gray-300">
-                <h1 className="text-2xl font-semibold text-gray-800">Auction Categories</h1>
+            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-200 bg-white/80 backdrop-blur-lg mt-10">
+                <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-blue-500 drop-shadow">
+                    Auction Categories
+                </h1>
             </div>
 
-            <div className="relative px-10">
+            <div className="relative px-10 py-8">
                 {/* Left Arrow */}
                 <button
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-300 p-2 rounded-full shadow-md hover:bg-gray-400 z-10 transition-all"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white shadow-lg p-2 rounded-full border border-purple-100 hover:bg-purple-100 transition z-10"
                     onClick={() => scrollLeft(categoryRef)}
                 >
-                    <AiOutlineLeft size={24} />
+                    <AiOutlineLeft size={28} className="text-purple-600" />
                 </button>
 
                 {/* Scrollable Auction Categories */}
                 <div
                     ref={categoryRef}
-                    className="flex overflow-x-auto gap-6 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full px-4 py-4"
+                    className="flex overflow-x-auto gap-8 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full px-4 py-4"
                 >
-                {category.map((cat) => (
-                    <div
-                        key={cat.id}
-                        className="h-40 w-1/4 min-w-[25%] border-2 border-gray-200 rounded-2xl shadow-lg 
-                        bg-gradient-to-br from-blue-200 via-indigo-100 to-purple-50
-                        flex items-center justify-center cursor-pointer 
-                        hover:shadow-2xl hover:scale-110 transition-all duration-300 ease-in-out transform snap-center"
-                        onClick={() => navigate(`/auction/category/${cat.category_name.toLowerCase()}`)}
-                    >
-                        <span className="text-black text-xl tracking-wide drop-shadow-md">
-                            {cat.category_name}
-                        </span>
-                    </div>
-                ))}
-
+                    {category.map((cat) => (
+                        <div
+                            key={cat.id}
+                            className="h-40 w-64 min-w-[60vw] sm:min-w-[30vw] md:min-w-[18vw] border-2 border-purple-100 rounded-2xl shadow-lg 
+                            bg-gradient-to-br from-blue-200 via-indigo-100 to-purple-100
+                            flex items-center justify-center cursor-pointer 
+                            hover:shadow-2xl hover:scale-105 transition-all duration-300 ease-in-out transform snap-center"
+                            onClick={() => navigate(`/auction/category/${cat.category_name.toLowerCase()}`)}
+                        >
+                            <span className="text-black text-2xl font-bold tracking-wide drop-shadow-md">
+                                {cat.category_name}
+                            </span>
+                        </div>
+                    ))}
                 </div>
 
                 {/* Right Arrow */}
                 <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-300 p-2 rounded-full shadow-md hover:bg-gray-400 z-10 transition-all"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white shadow-lg p-2 rounded-full border border-purple-100 hover:bg-purple-100 transition z-10"
                     onClick={() => scrollRight(categoryRef)}
                 >
-                    <AiOutlineRight size={24} />
+                    <AiOutlineRight size={28} className="text-purple-600" />
                 </button>
-            </div>            
-        </>
+            </div>
+        </div>
     );
 }
-
 
 export default Home;
