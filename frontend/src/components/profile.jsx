@@ -30,7 +30,7 @@ function Profile() {
           <div className="border-4 border-blue-200 rounded-full h-40 w-40 flex items-center justify-center overflow-hidden bg-gradient-to-tr from-blue-200 via-white to-purple-200 shadow-lg">
             <img
               alt="Profile"
-              src={user.image ? `http://127.0.0.1:8000/${user.image}` : "/default-profile.png"}
+              src={user.image ? `https://auctionhub.pythonanywhere.com/${user.image}` : "/default-profile.png"}
               className="h-full w-full object-cover"
             />
           </div>

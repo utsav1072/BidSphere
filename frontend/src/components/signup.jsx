@@ -36,7 +36,7 @@ function Signup() {
         e.preventDefault();
         setForgotMessage('');
         try {
-        const response = await fetch('http://localhost:8000/api/forgot-password/', {
+        const response = await fetch('https://auctionhub.pythonanywhere.com/api/forgot-password/', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',

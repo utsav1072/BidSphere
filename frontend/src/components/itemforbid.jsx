@@ -14,7 +14,7 @@ const ItemForBid = () => {
 
   async function getcat() {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/category/");
+      const response = await axios.get("https://auctionhub.pythonanywhere.com/api/category/");
       setCat(response.data.categories);
     } catch (err) {
       setError("Failed to fetch categories.");
@@ -23,7 +23,7 @@ const ItemForBid = () => {
 
   async function getuserid() {
     try {
-      const response = await axiosInstance.get("http://127.0.0.1:8000/api/test/", {
+      const response = await axiosInstance.get("https://auctionhub.pythonanywhere.com/api/test/", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authTokens.access}`,
@@ -118,7 +118,7 @@ const ItemForBid = () => {
 
     try {
       const response = await axiosInstance.post(
-        "http://127.0.0.1:8000/api/auctions/create/",
+        "https://auctionhub.pythonanywhere.com/api/auctions/create/",
         data,
         {
           headers: {

@@ -13,7 +13,7 @@ const Singlecat = () => {
     async function getItemsOfCategory() {
       setLoading(true);
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/items/search/?category=${cat}`);
+        const response = await axios.get(`https://auctionhub.pythonanywhere.com/api/items/search/?category=${cat}`);
         // Handle both array and object response
         if (Array.isArray(response.data)) {
           setCategoryItems(response.data);
@@ -59,7 +59,7 @@ const Singlecat = () => {
               >
                 <div className="relative w-full h-56 mb-4 rounded-xl overflow-hidden">
                   <img
-                    src={`http://127.0.0.1:8000/${item.image_url}`}
+                    src={`https://auctionhub.pythonanywhere.com/${item.image_url}`}
                     alt={item.title}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />

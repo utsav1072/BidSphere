@@ -46,7 +46,7 @@ const Watchlist = () => {
                 >
                   <div className='relative overflow-hidden rounded-xl mb-6'>
                     <img 
-                      src={`http://127.0.0.1:8000/${item.image_url}`} 
+                      src={`https://auctionhub.pythonanywhere.com/${item.image_url}`} 
                       alt={item.title}
                       className='w-full h-48 object-cover rounded-xl transform transition-transform duration-500 group-hover:scale-105' 
                     />

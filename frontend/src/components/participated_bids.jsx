@@ -44,7 +44,7 @@ const Participated_bids = () => {
                 >
                   <div className="relative w-full h-48 mb-4 rounded-xl overflow-hidden">
                     <img
-                      src={`http://127.0.0.1:8000/${item.image_url}`}
+                      src={`https://auctionhub.pythonanywhere.com/${item.image_url}`}
                       alt={item.title}
                       className="w-full h-full object-cover transition-transform duration-300 hover:scale-105 rounded-xl"
                     />

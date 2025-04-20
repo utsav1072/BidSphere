@@ -9,7 +9,7 @@ const AuctionRelativeTimer = ({ itemId }) => {
   useEffect(() => {
     const fetchEndTime = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/auction-timer/${itemId}/`);
+        const response = await fetch(`https://auctionhub.pythonanywhere.com/api/auction-timer/${itemId}/`);
         const data = await response.json();
         setEndTime(data.time_left);
       } catch (error) {

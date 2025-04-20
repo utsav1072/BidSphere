@@ -24,7 +24,7 @@ function Home() {
     useEffect(() => {
         async function getAllItems() {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/api/items/");
+                const response = await axios.get("https://auctionhub.pythonanywhere.com/api/items/");
                 setItems(response.data.items);
             } catch (error) {
                 console.log(error);
@@ -32,7 +32,7 @@ function Home() {
         }
         async function getAllcategory() {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/api/category/");
+                const response = await axios.get("https://auctionhub.pythonanywhere.com/api/category/");
                 setCategory(response.data.categories);
             } catch (error) {
                 console.log(error);
@@ -97,7 +97,7 @@ function Home() {
                                 {/* Card Image */}
                                 <div className="relative w-full h-60 rounded-xl overflow-hidden flex-shrink-0">
                                     <img
-                                    src={`http://127.0.0.1:8000/media/${item.image_url}`}
+                                    src={`https://auctionhub.pythonanywhere.com/media/${item.image_url}`}
                                     alt={item.title}
                                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                                     />

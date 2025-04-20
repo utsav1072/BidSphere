@@ -73,7 +73,7 @@ const Aitemdetail = () => {
   useEffect(() => {
     async function getItem() {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/items/search/?itemid=${id}`);
+        const response = await axios.get(`https://auctionhub.pythonanywhere.com/api/items/search/?itemid=${id}`);
         setItem(response.data.length > 0 ? response.data[0] : null);
       } catch (error) {
         console.log(error);
@@ -85,7 +85,7 @@ const Aitemdetail = () => {
   useEffect(() => {
     async function getHighestBid() {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/auction/search/?q=${id}`);
+        const response = await axios.get(`https://auctionhub.pythonanywhere.com/api/auction/search/?q=${id}`);
         if (response.data.length > 0) {
           setHighestBidId(response.data[0].highest_bid);
         }
@@ -100,8 +100,8 @@ const Aitemdetail = () => {
     if (highestBidId) {
       async function getHighestBidder() {
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/bids/${highestBidId}/`);
-          const userRes = await axios.get(`http://127.0.0.1:8000/api/user/?q=${response.data.bidder}`);
+          const response = await axios.get(`https://auctionhub.pythonanywhere.com/api/bids/${highestBidId}/`);
+          const userRes = await axios.get(`https://auctionhub.pythonanywhere.com/api/user/?q=${response.data.bidder}`);
           setHighestBidder(userRes.data[0].username);
         } catch (error) {
           // silent
@@ -150,7 +150,7 @@ const Aitemdetail = () => {
         {/* Image Section */}
         <div className="flex-shrink-0 h-80 w-80 border-2 border-blue-100 rounded-3xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 shadow-lg">
           <img
-            src={`http://127.0.0.1:8000/${item.image_url}`}
+            src={`https://auctionhub.pythonanywhere.com/${item.image_url}`}
             alt={`image-of-item-${id}`}
             className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
           />

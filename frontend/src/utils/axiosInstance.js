@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { logoutUser } from "../features/authentication/authSlice"; // Import logout action from your Redux slice
 import { store } from "../app/store"; // Import your Redux store
 
-const baseURL = "http://127.0.0.1:8000/api/";
+const baseURL = "https://auctionhub.pythonanywhere.com/api/";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
