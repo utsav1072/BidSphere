@@ -39,7 +39,7 @@ const Useraucsummary = () => {
             >
               <div className="relative w-full h-48 mb-4 rounded-xl overflow-hidden">
                 <img
-                  src={item.image_url ? item.image_url : "/default-image.png"}
+                  src={`https://auctionhub.pythonanywhere.com/${item.image_url}`}
                   alt={item.title}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />

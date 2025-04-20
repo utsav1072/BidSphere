@@ -76,7 +76,7 @@ const Participated_bids = () => {
                 Start bidding on auctions and your participated items will appear here!
               </p>
               <button
-                onClick={() => navigate('/auctions')}
+                onClick={() => navigate('/auction/all-items')}
                 className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition"
               >
                 Browse Auctions

@@ -74,7 +74,7 @@ function Profile() {
           />
           <ActionCard
             icon={<FiAward className="text-3xl text-indigo-600" />}
-            label="Overall Summary"
+            label="Your Auctions"
             onClick={() => navigate("/profile/auction-summary")}
           />
         </div>
