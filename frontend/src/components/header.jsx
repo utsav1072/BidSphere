@@ -8,10 +8,12 @@ import axios from "axios";
 function Header() {
     const [searchItem, setSearchItem] = useState("");
     const [items, setItems] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     useEffect(() => {
         if (!searchItem.trim()) {
-            setItems([]); // Clear results if search is empty
+            setItems([]);
+            setShowDropdown(false);
             return;
         }
         const controller = new AbortController();
@@ -22,18 +24,19 @@ function Header() {
                     { signal: controller.signal }
                 );
                 setItems(response.data);
+                setShowDropdown(true);
             } catch (error) {
                 if (axios.isCancel(error)) {
-                    console.log("Request canceled:", error.message);
+                    // Request cancelled
                 } else {
                     console.error("Error fetching data:", error);
                 }
             }
-        }, 500);
+        }, 400);
 
         return () => {
             clearTimeout(delayDebounce);
-            controller.abort(); // Cancel previous request
+            controller.abort();
         };
     }, [searchItem]);
 
@@ -50,31 +53,38 @@ function Header() {
     ];
 
     return (
-        <header className="h-[70px] bg-gray-800 shadow-md w-full top-0 left-0 z-50">
-            <nav className="flex justify-between items-center px-6 md:px-10 py-4">
-                {/* Left: Logo Section */}
-                <div className="flex justify-start items-center">
-                    <a className="flex items-center text-white space-x-2" href="/">
-                        <ImHammer2 className="text-2xl text-yellow-400" />
-                        <span className="text-xl font-bold">AuctionHub</span>
-                    </a>
+        <header className="sticky top-0 left-0 z-50 w-full backdrop-blur-md bg-white/80 shadow-lg border-b border-gray-200">
+            <nav className="flex justify-between items-center px-4 md:px-10 py-3">
+                {/* Logo */}
+                <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+                    <ImHammer2 className="text-3xl text-yellow-500 drop-shadow" />
+                    <span className="text-2xl font-extrabold bg-gradient-to-r from-blue-700 to-yellow-500 bg-clip-text text-transparent drop-shadow">
+                        AuctionHub
+                    </span>
                 </div>
 
-                {/* Middle: Search Bar (only visible on medium+ screens) */}
-                <div className="relative flex-1 max-w-sm mx-auto hidden md:block">
+                {/* Search Bar */}
+                <div className="relative flex-1 max-w-md mx-6 hidden md:block">
                     <input
                         type="text"
-                        placeholder="Search..."
-                        className="w-full h-8 px-3 border bg-amber-50 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Search auctions..."
+                        className="w-full h-10 px-4 border border-gray-300 rounded-xl bg-white/90 shadow-sm focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"
+                        value={searchItem}
                         onChange={(e) => setSearchItem(e.target.value)}
+                        onFocus={() => items.length > 0 && setShowDropdown(true)}
+                        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                     />
-                    {items.length > 0 && (
-                        <ul className="absolute left-0 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {showDropdown && items.length > 0 && (
+                        <ul className="absolute left-0 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-64 overflow-y-auto animate-fade-in">
                             {items.map((item) => (
                                 <li
                                     key={item.id}
-                                    className="p-2 cursor-pointer hover:bg-gray-100 transition-all"
-                                    onClick={() => navigate(`/auction/item/${item.id}`)}
+                                    className="p-3 cursor-pointer hover:bg-yellow-50 transition-all text-gray-700"
+                                    onMouseDown={() => {
+                                        navigate(`/auction/item/${item.id}`);
+                                        setShowDropdown(false);
+                                        setSearchItem("");
+                                    }}
                                 >
                                     {item.title}
                                 </li>
@@ -83,16 +93,16 @@ function Header() {
                     )}
                 </div>
 
-                {/* Right: Navigation Items */}
-                <div className="flex justify-end items-center space-x-4">
-                    <ul className="flex items-center space-x-4">
+                {/* Navigation */}
+                <div className="flex items-center space-x-2 md:space-x-4">
+                    <ul className="flex items-center space-x-2 md:space-x-4">
                         {navItems.map(
                             (item) =>
                                 item.active && (
                                     <li key={item.name}>
                                         <button
                                             onClick={() => navigate(item.slug)}
-                                            className="px-4 py-2 text-white transition duration-300 hover:bg-yellow-500 rounded-full"
+                                            className="px-4 py-2 text-gray-800 font-semibold rounded-full hover:bg-yellow-400/80 hover:text-white transition"
                                         >
                                             {item.name}
                                         </button>
@@ -102,8 +112,11 @@ function Header() {
                         {user && (
                             <li>
                                 <button
-                                    className="px-4 py-2 text-white border border-yellow-400 rounded-full hover:bg-yellow-500 transition duration-300"
-                                    onClick={() => {dispatch(logoutUser());navigate('/');}}
+                                    className="px-4 py-2 border border-yellow-500 text-yellow-700 font-semibold rounded-full hover:bg-yellow-500 hover:text-white transition"
+                                    onClick={() => {
+                                        dispatch(logoutUser());
+                                        navigate('/');
+                                    }}
                                 >
                                     Logout
                                 </button>

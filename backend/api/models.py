@@ -32,7 +32,7 @@ class Item(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     status = models.CharField(max_length=50, choices=[('active', 'Active'), ('closed', 'Closed')])
-    image_url = models.URLField()
+    image_url = models.ImageField(upload_to="item_images",default = 'item_default.jpeg' ,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Bid(models.Model):
