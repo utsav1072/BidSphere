@@ -55,14 +55,14 @@ function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pb-20">
+        <div className="min-h-screen bg-gradient-to-br from-blue-100/60 via-white/80 to-purple-100/60 pb-20">
             {/* Featured Auctions */}
-            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-200 bg-white/80 backdrop-blur-lg">
+            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-200 bg-white/70 backdrop-blur-lg">
                 <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-500 drop-shadow">
                     Featured Auctions
                 </h1>
                 <button
-                    className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-6 py-3 rounded-xl shadow-lg font-semibold transition-all"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl shadow-lg font-semibold transition-all"
                     onClick={() => navigate(`/auction/all-items`)}
                 >
                     View All
@@ -83,33 +83,45 @@ function Home() {
                     ref={auctionRef}
                     className="flex overflow-x-auto gap-8 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full py-2"
                 >
-                    {items.map((item) => (
-                        <div
-                            key={item.id}
-                            className="bg-white/90 shadow-xl rounded-2xl p-6 border min-w-[70vw] sm:min-w-[40vw] md:min-w-[30vw] lg:min-w-[22vw] snap-center flex flex-col items-center transition-all hover:shadow-2xl hover:-translate-y-2"
-                        >
-                            <div className="relative w-full h-56 mb-4 rounded-xl overflow-hidden">
-                                <img
+                    {items.length === 0 ? (
+                        <div className="text-xl text-blue-700 font-semibold mx-auto mt-12">
+                            No featured auctions found.
+                        </div>
+                    ) : (
+                        items.map((item) => (
+                            <div
+                                key={item.id}
+                                className="bg-white/90 shadow-xl rounded-2xl border border-blue-100 min-w-[70vw] sm:min-w-[40vw] md:min-w-[30vw] lg:min-w-[22vw] snap-center flex flex-col transition-all hover:shadow-2xl hover:-translate-y-2"
+                                style={{ height: "420px", maxWidth: "350px" }} // Ensures all cards have the same height and width
+                                >
+                                {/* Card Image */}
+                                <div className="relative w-full h-60 rounded-xl overflow-hidden flex-shrink-0">
+                                    <img
                                     src={`http://127.0.0.1:8000/media/${item.image_url}`}
                                     alt={item.title}
                                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                                />
-                                <span className="absolute top-3 right-3 bg-white/80 px-3 py-1 rounded-full text-xs text-blue-700 font-semibold shadow">
+                                    />
+                                    <span className="absolute top-3 right-3 bg-white/90 px-3 py-1 rounded-full text-xs text-blue-700 font-semibold shadow">
                                     ₹{item.current_price}
-                                </span>
-                            </div>
-                            <h2 className="text-xl font-bold text-gray-800 mb-2 line-clamp-1">{item.title}</h2>
-                            <p className="text-gray-600 text-sm mb-2 line-clamp-2">{item.description}</p>
-                            <button
-                                className="mt-4 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 shadow transition-all"
-                                onClick={() => navigate(`/auction/item/${item.id}`)}
-                            >
-                                View Details
-                            </button>
-                        </div>
-                    ))}
-                </div>
+                                    </span>
+                                </div>
+                                {/* Card Body */}
+                                <div className="flex flex-col flex-1 px-2 py-3">
+                                    <h2 className="text-lg font-bold text-gray-800 mb-1 line-clamp-1 min-h-[28px]">{item.title}</h2>
+                                    <p className="text-gray-600 text-sm mb-2 line-clamp-2 min-h-[40px]">{item.description}</p>
+                                    <div className="flex-1" />
+                                    <button
+                                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 shadow transition-all mt-2"
+                                    onClick={() => navigate(`/auction/item/${item.id}`)}
+                                    >
+                                    View Details
+                                    </button>
+                                </div>
+                                </div>
 
+                        ))
+                    )}
+                </div>
                 {/* Right Arrow */}
                 <button
                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-white shadow-lg p-2 rounded-full border border-blue-100 hover:bg-blue-100 transition z-10"
@@ -120,7 +132,7 @@ function Home() {
             </div>
 
             {/* Auction Categories */}
-            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-200 bg-white/80 backdrop-blur-lg mt-10">
+            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-200 bg-white/70 backdrop-blur-lg mt-10">
                 <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-blue-500 drop-shadow">
                     Auction Categories
                 </h1>
@@ -140,20 +152,26 @@ function Home() {
                     ref={categoryRef}
                     className="flex overflow-x-auto gap-8 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full px-4 py-4"
                 >
-                    {category.map((cat) => (
-                        <div
-                            key={cat.id}
-                            className="h-40 w-64 min-w-[60vw] sm:min-w-[30vw] md:min-w-[18vw] border-2 border-purple-100 rounded-2xl shadow-lg 
-                            bg-gradient-to-br from-blue-200 via-indigo-100 to-purple-100
-                            flex items-center justify-center cursor-pointer 
-                            hover:shadow-2xl hover:scale-105 transition-all duration-300 ease-in-out transform snap-center"
-                            onClick={() => navigate(`/auction/category/${cat.category_name.toLowerCase()}`)}
-                        >
-                            <span className="text-black text-2xl font-bold tracking-wide drop-shadow-md">
-                                {cat.category_name}
-                            </span>
+                    {category.length === 0 ? (
+                        <div className="text-xl text-purple-700 font-semibold mx-auto mt-12">
+                            No categories found.
                         </div>
-                    ))}
+                    ) : (
+                        category.map((cat) => (
+                            <div
+                                key={cat.id}
+                                className="h-40 w-64 min-w-[60vw] sm:min-w-[30vw] md:min-w-[18vw] border-2 border-purple-100 rounded-2xl shadow-lg 
+                                bg-gradient-to-br from-blue-200 via-indigo-100 to-purple-100
+                                flex items-center justify-center cursor-pointer 
+                                hover:shadow-2xl hover:scale-105 transition-all duration-300 ease-in-out transform snap-center"
+                                onClick={() => navigate(`/auction/category/${cat.category_name.toLowerCase()}`)}
+                            >
+                                <span className="text-black text-2xl font-bold tracking-wide drop-shadow-md">
+                                    {cat.category_name}
+                                </span>
+                            </div>
+                        ))
+                    )}
                 </div>
 
                 {/* Right Arrow */}

@@ -117,7 +117,7 @@ def getWatchlist(request):
             'description': entry.item.description,
             'current_price': entry.item.current_price,
             'category': entry.item.category.category_name if entry.item.category else None,
-            'image_url': entry.item.image_url,
+            'image_url': entry.item.image_url.url if entry.item.image_url else None,
             'added_on': entry.added_on
         }
         for entry in watchlist_items
@@ -159,7 +159,7 @@ def get_user_bids(request):
                 'title': bid.item.title,
                 'description': bid.item.description,
                 'current_price': bid.item.current_price,
-                'image_url': bid.item.image_url,  # assuming `image` is an ImageField
+                'image_url': bid.item.image_url.url if bid.item.image_url else None,
             },
             'bid_amount': bid.bid_amount,
             'bid_time': bid.bid_time

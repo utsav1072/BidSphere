@@ -1,107 +1,142 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import axiosInstance from '../utils/axiosInstance'
+import axiosInstance from '../utils/axiosInstance';
 import { useNavigate } from "react-router-dom";
 
 const ItemForBid = () => {
   const authTokens = useSelector((state) => state.auth.authTokens);
-  const [userId, setuserId] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [cat, setCat] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   async function getcat() {
-    const response = await axios.get("http://127.0.0.1:8000/api/category/");
-    setCat(response.data.categories);
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/category/");
+      setCat(response.data.categories);
+    } catch (err) {
+      setError("Failed to fetch categories.");
+    }
   }
 
   async function getuserid() {
-    const response = await axiosInstance.get("http://127.0.0.1:8000/api/test/", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authTokens.access}`,
-      },
-    });
-    setuserId(response.data.data.id);
-    // console.log(response.data.data.id)
+    try {
+      const response = await axiosInstance.get("http://127.0.0.1:8000/api/test/", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens.access}`,
+        },
+      });
+      setUserId(response.data.data.id);
+    } catch (err) {
+      setError("Failed to fetch user information.");
+    }
   }
 
   useEffect(() => {
     getuserid();
     getcat();
-    // eslint-disable-next-line
   }, []);
 
   const getCurrentDateTime = () => {
     const now = new Date();
-    return now.toISOString().slice(0, 16); // Format as YYYY-MM-DDTHH:MM
+    return now.toISOString().slice(0, 16);
   };
 
   const getEndDateTime = () => {
     const now = new Date();
-    now.setHours(now.getHours() + 24); // Add 24 hours
+    now.setHours(now.getHours() + 24);
     return now.toISOString().slice(0, 16);
   };
 
   const [formData, setFormData] = useState({
-    item: {
-      title: "",
-      description: "",
-      starting_price: "",
-      bid_increment: "",
-      category: "",
-      start_time: getCurrentDateTime(),
-      end_time: getEndDateTime(),
-      status: "active",
-      seller: Number(userId),
-      image_url:null
-    },
-    auction_status: "ongoing",
-    highest_bid: null,
-    winner: null,
+    title: "",
+    description: "",
+    starting_price: "",
+    bid_increment: "",
+    category: "",
+    start_time: getCurrentDateTime(),
+    end_time: getEndDateTime(),
+    status: "active",
+    image_url: null,
   });
+
+  const [auctionStatus, setAuctionStatus] = useState("ongoing");
+  const [highestBid, setHighestBid] = useState(null); // integer or null
+  const [winner, setWinner] = useState(null); // integer or null
 
   // Update seller in formData when userId changes
   useEffect(() => {
-    setFormData((prevData) => ({
-      ...prevData,
-      item: {
-        ...prevData.item,
-        seller: Number(userId),
-      },
-    }));
+    if (userId) {
+      setFormData((prev) => ({
+        ...prev,
+        seller: userId,
+      }));
+    }
   }, [userId]);
 
   // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      item: {
-        ...prevData.item,
-        [name]: value,
-        seller: Number(userId),
-      },
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Handle image file change
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setFormData((prev) => ({
+      ...prev,
+      image_url: file,
     }));
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
+    // Prepare FormData for multipart/form-data
+    const data = new FormData();
+
+    // Append item fields
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "image_url" && value) {
+        data.append(`item.image_url`, value);
+      } else {
+        data.append(`item.${key}`, value);
+      }
+    });
+    data.append("auction_status", auctionStatus);
+    data.append("highest_bid", highestBid !== null ? highestBid : "");
+    data.append("winner", winner !== null ? winner : "");
 
     try {
-      const response = await axiosInstance.post("http://127.0.0.1:8000/api/auctions/create/", formData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authTokens.access}`,
-        },
-      });
-      // console.log("Success:", response.data);
+      const response = await axiosInstance.post(
+        "http://127.0.0.1:8000/api/auctions/create/",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${authTokens.access}`,
+          },
+        }
+      );
       alert("Auction item submitted successfully!");
-      navigate(`/auction/item/${response.data.id}`)
+      navigate(`/auction/item/${response.data.id}`);
     } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("Failed to submit auction item.");
+      let msg = "Failed to submit auction item.";
+      if (error.response && error.response.data) {
+        msg += " " + JSON.stringify(error.response.data);
+      }
+      setError(msg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -111,6 +146,9 @@ const ItemForBid = () => {
         <h2 className="text-3xl font-bold text-gray-800 text-center mb-6 pb-4 border-b-2 border-blue-100">
           Create New Auction
         </h2>
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title Input */}
           <div>
@@ -120,14 +158,13 @@ const ItemForBid = () => {
             <input
               type="text"
               name="title"
-              value={formData.item.title}
+              value={formData.title}
               onChange={handleChange}
               required
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
               placeholder="Enter item title"
             />
           </div>
-
           {/* Description Input */}
           <div>
             <label className="block text-sm font-semibold text-gray-600 mb-2">
@@ -135,7 +172,7 @@ const ItemForBid = () => {
             </label>
             <textarea
               name="description"
-              value={formData.item.description}
+              value={formData.description}
               onChange={handleChange}
               rows="4"
               required
@@ -143,7 +180,6 @@ const ItemForBid = () => {
               placeholder="Describe your item in detail..."
             ></textarea>
           </div>
-
           {/* Price & Increment Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -155,7 +191,7 @@ const ItemForBid = () => {
                 <input
                   type="number"
                   name="starting_price"
-                  value={formData.item.starting_price}
+                  value={formData.starting_price}
                   onChange={handleChange}
                   step="0.01"
                   required
@@ -164,7 +200,6 @@ const ItemForBid = () => {
                 />
               </div>
             </div>
-
             <div>
               <label className="block text-sm font-semibold text-gray-600 mb-2">
                 Bid Increment
@@ -174,7 +209,7 @@ const ItemForBid = () => {
                 <input
                   type="number"
                   name="bid_increment"
-                  value={formData.item.bid_increment}
+                  value={formData.bid_increment}
                   onChange={handleChange}
                   step="0.01"
                   required
@@ -184,7 +219,6 @@ const ItemForBid = () => {
               </div>
             </div>
           </div>
-
           {/* Category Select */}
           <div>
             <label className="block text-sm font-semibold text-gray-600 mb-2">
@@ -192,7 +226,7 @@ const ItemForBid = () => {
             </label>
             <select
               name="category"
-              value={formData.item.category}
+              value={formData.category}
               onChange={handleChange}
               required
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2YjcyOGQiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im03IDEwIDUgNSA1LTVaIi8+PC9zdmc+')] bg-no-repeat bg-[right_1rem_center] bg-[length:1.5rem] cursor-pointer"
@@ -205,7 +239,6 @@ const ItemForBid = () => {
               ))}
             </select>
           </div>
-
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-semibold text-gray-600 mb-2">
@@ -233,33 +266,25 @@ const ItemForBid = () => {
                     <span className="font-semibold text-blue-600">Click to upload</span> or drag and drop
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {formData.item.image_url?.name || "No file chosen"}
+                    {formData.image_url?.name || "No file chosen"}
                   </p>
                 </div>
                 <input 
                   type="file" 
                   accept="image/*"
-                  onChange={e => {
-                    setFormData(prev => ({
-                      ...prev,
-                      item: {
-                        ...prev.item,
-                        image_url: e.target.files[0],
-                      }
-                    }));
-                  }}
+                  onChange={handleImageChange}
                   className="hidden"
                 />
               </label>
             </div>
           </div>
-
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-br from-blue-600 to-blue-500 text-white py-4 rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
+            className="w-full bg-gradient-to-br from-blue-600 to-blue-500 text-white py-4 rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-60"
+            disabled={isSubmitting}
           >
-            Create Auction Listing
+            {isSubmitting ? "Submitting..." : "Create Auction Listing"}
           </button>
         </form>
       </div>

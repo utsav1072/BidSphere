@@ -2,80 +2,100 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
+import { FiEdit2, FiPlusCircle, FiBox, FiTrendingUp, FiAward } from "react-icons/fi";
 
 function Profile() {
-    const [user, setUser] = useState([]);
-    const navigate = useNavigate();
-    const authTokens = useSelector((state) => state.auth.authTokens);
+  const [user, setUser] = useState({});
+  const navigate = useNavigate();
+  const authTokens = useSelector((state) => state.auth.authTokens);
 
-    useEffect(() => {
-        async function getUser() {
-            const response = await axiosInstance.get('/test/', {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${authTokens?.access}`,
-                },
-            });
-            setUser(response.data.data);
-        }
-        getUser();
-    }, []);
+  useEffect(() => {
+    async function getUser() {
+      const response = await axiosInstance.get('/test/', {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens?.access}`,
+        },
+      });
+      setUser(response.data.data);
+    }
+    getUser();
+  }, [authTokens]);
 
-    return (
-        <div className="flex flex-col lg:flex-row gap-8 p-8 bg-gradient-to-br from-gray-100 to-blue-50 min-h-screen">
-            {/* Profile Card */}
-            <div className="w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl border border-gray-200 mx-auto">
-                <div className="border-4 border-blue-100 rounded-full h-40 w-40 mx-auto flex items-center justify-center overflow-hidden bg-gray-100 shadow">
-                    <img
-                        alt="Profile"
-                        src={`http://127.0.0.1:8000/${user.image}`}
-                        className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                </div>
-                <div className="text-center mt-6 text-2xl font-bold text-gray-800">{user.username}</div>
-                <div className="text-center text-gray-500 mt-1">{user.email}</div>
-                <div className="text-center text-gray-500 mt-1">{user.address}</div>
-                <div className="text-center text-gray-500 mt-1">Phone: {user.phone_number}</div>
-                <button
-                    className="w-full bg-blue-600 hover:bg-blue-700 mt-6 py-2 rounded-xl text-white font-semibold shadow transition duration-200"
-                    onClick={() => navigate('/edit-profile')}
-                >
-                    Edit Profile
-                </button>
-                <div className="mt-8 text-center">
-                    <div className="text-gray-700 font-medium">Current Balance:</div>
-                    <button
-                        className="mt-2 bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg font-semibold shadow transition"
-                        // onClick={...} // Add logic for adding money
-                    >
-                        Add Money
-                    </button>
-                </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-100/60 via-white/80 to-purple-100/60 flex items-center justify-center py-12 px-4">
+      <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-10">
+        {/* Profile Card */}
+        <div className="flex-1 bg-white/70 backdrop-blur-lg rounded-3xl shadow-2xl border border-blue-100 p-10 flex flex-col items-center">
+          <div className="border-4 border-blue-200 rounded-full h-40 w-40 flex items-center justify-center overflow-hidden bg-gradient-to-tr from-blue-200 via-white to-purple-200 shadow-lg">
+            <img
+              alt="Profile"
+              src={user.image ? `http://127.0.0.1:8000/${user.image}` : "/default-profile.png"}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div className="mt-6 text-3xl font-extrabold text-blue-900">{user.username || "Username"}</div>
+          <div className="text-blue-700 mt-1">{user.email || "user@email.com"}</div>
+          <div className="text-blue-600 mt-1">{user.address || "Address not set"}</div>
+          <div className="text-blue-600 mt-1">Phone: {user.phone_number || "N/A"}</div>
+          <button
+            className="flex items-center gap-2 w-full justify-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 mt-6 py-2 rounded-xl text-white font-bold shadow-md transition"
+            onClick={() => navigate('/edit-profile')}
+          >
+            <FiEdit2 className="text-lg" />
+            Edit Profile
+          </button>
+          <div className="mt-10 w-full text-center">
+            <div className="text-blue-800 font-medium text-lg">Current Balance:</div>
+            <div className="text-2xl font-bold text-blue-700 mt-1 mb-3">
+              ₹{user.balance || "0.00"}
             </div>
-
-            {/* Profile Actions */}
-            <div className="flex-1 flex flex-col gap-6">
-                <div
-                    className="w-full h-36 rounded-2xl border border-blue-200 bg-white shadow-lg p-8 flex items-center text-xl font-semibold text-blue-800 cursor-pointer hover:bg-blue-50 hover:shadow-2xl transition"
-                    onClick={() => navigate('/itemforbid')}
-                >
-                    <span className="mx-auto">Place an Item for Bid</span>
-                </div>
-                <div
-                    className="w-full h-36 rounded-2xl border border-blue-200 bg-white shadow-lg p-8 flex items-center cursor-pointer hover:bg-blue-50 hover:shadow-2xl transition"
-                    onClick={() => navigate("/profile/participated-bids")}
-                >
-                    <span className="mx-auto text-xl font-semibold text-blue-800">Participated Bids</span>
-                </div>
-                <div
-                    className="w-full h-36 rounded-2xl border border-blue-200 bg-white shadow-lg p-8 flex items-center cursor-pointer hover:bg-blue-50 hover:shadow-2xl transition"
-                    onClick={() => navigate("/profile/auction-summary")}
-                >
-                    <span className="mx-auto text-xl font-semibold text-blue-800">Overall Summary</span>
-                </div>
-            </div>
+            <button
+              className="flex items-center gap-2 mx-auto bg-blue-100 hover:bg-blue-200 text-blue-700 px-5 py-2 rounded-lg font-semibold shadow transition"
+              // onClick={...} // Add logic for adding money
+            >
+              <FiPlusCircle />
+              Add Money
+            </button>
+          </div>
         </div>
-    );
+
+        {/* Profile Actions */}
+        <div className="flex-[1.2] flex flex-col gap-8 justify-center">
+          <ActionCard
+            icon={<FiBox className="text-3xl text-indigo-600" />}
+            label="Place an Item for Bid"
+            onClick={() => navigate('/itemforbid')}
+          />
+          <ActionCard
+            icon={<FiTrendingUp className="text-3xl text-indigo-600" />}
+            label="Participated Bids"
+            onClick={() => navigate("/profile/participated-bids")}
+          />
+          <ActionCard
+            icon={<FiAward className="text-3xl text-indigo-600" />}
+            label="Overall Summary"
+            onClick={() => navigate("/profile/auction-summary")}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Reusable Action Card component for clean code
+function ActionCard({ icon, label, onClick }) {
+  return (
+    <div
+      className="flex items-center gap-6 bg-white/70 backdrop-blur-lg border border-blue-100 shadow-lg rounded-2xl px-8 py-7 cursor-pointer hover:bg-blue-50/70 hover:shadow-2xl transition"
+      onClick={onClick}
+    >
+      <div className="flex-shrink-0 bg-blue-100 rounded-full p-4">
+        {icon}
+      </div>
+      <span className="text-2xl font-semibold text-blue-900">{label}</span>
+    </div>
+  );
 }
 
 export default Profile;

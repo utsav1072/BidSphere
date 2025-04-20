@@ -14,8 +14,7 @@ function Footer() {
                     <ul className="mt-2 space-y-2 text-sm">
                         <li><a href="/" className="hover:text-yellow-400 transition">Home</a></li>
                         <li><a href="/about" className="hover:text-yellow-400 transition">About</a></li>
-                        <li><a href="/categories" className="hover:text-yellow-400 transition">Categories</a></li>
-                        <li><a href="/contact" className="hover:text-yellow-400 transition">Contact</a></li>
+                        <li><a href="https://github.com/utsav1072/BidSphere" className="hover:text-yellow-400 transition">Contact</a></li>
                     </ul>
                 </div>
             </div>
