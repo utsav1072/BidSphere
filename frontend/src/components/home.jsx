@@ -24,7 +24,7 @@ function Home() {
     useEffect(() => {
         async function getAllItems() {
             try {
-                const response = await axios.get("https://auctionhub.pythonanywhere.com/api/items/");
+                const response = await axios.get("http://127.0.0.1:8000/api/items/");
                 setItems(response.data.items);
             } catch (error) {
                 console.log(error);
@@ -32,7 +32,7 @@ function Home() {
         }
         async function getAllcategory() {
             try {
-                const response = await axios.get("https://auctionhub.pythonanywhere.com/api/category/");
+                const response = await axios.get("http://127.0.0.1:8000/api/category/");
                 setCategory(response.data.categories);
             } catch (error) {
                 console.log(error);
@@ -83,13 +83,20 @@ function Home() {
                     ref={auctionRef}
                     className="flex overflow-x-auto gap-8 scrollbar-hide scroll-smooth snap-x snap-mandatory w-full py-2"
                 >
-                    {items.map((item) => (
-                        <div
-                            key={item.id}
-                            className="bg-white/90 shadow-xl rounded-2xl p-6 border min-w-[70vw] sm:min-w-[40vw] md:min-w-[30vw] lg:min-w-[22vw] snap-center flex flex-col items-center transition-all hover:shadow-2xl hover:-translate-y-2"
-                        >
-                            <div className="relative w-full h-56 mb-4 rounded-xl overflow-hidden">
-                                <img
+                    {items.length === 0 ? (
+                        <div className="text-xl text-blue-700 font-semibold mx-auto mt-12">
+                            No featured auctions found.
+                        </div>
+                    ) : (
+                        items.map((item) => (
+                            <div
+                                key={item.id}
+                                className="bg-white/90 shadow-xl rounded-2xl border border-blue-100 min-w-[70vw] sm:min-w-[40vw] md:min-w-[30vw] lg:min-w-[22vw] snap-center flex flex-col transition-all hover:shadow-2xl hover:-translate-y-2"
+                                style={{ height: "420px", maxWidth: "350px" }} // Ensures all cards have the same height and width
+                                >
+                                {/* Card Image */}
+                                <div className="relative w-full h-60 rounded-xl overflow-hidden flex-shrink-0">
+                                    <img
                                     src={`http://127.0.0.1:8000/media/${item.image_url}`}
                                     alt={item.title}
                                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"

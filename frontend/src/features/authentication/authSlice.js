@@ -19,7 +19,7 @@ export const loginUser = createAsyncThunk(
     "auth/loginUser",
     async ({ email, password }, { rejectWithValue }) => {
         try {
-            const response = await fetch("https://auctionhub.pythonanywhere.com/api/token/", {
+            const response = await fetch("http://127.0.0.1:8000/api/token/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -54,7 +54,7 @@ export const registerUser = createAsyncThunk(
     "auth/registerUser",
     async ({ email, username, password, password2 }, { rejectWithValue }) => {
         try {
-            const response = await fetch("https://auctionhub.pythonanywhere.com/api/register/", {
+            const response = await fetch("http://127.0.0.1:8000/api/register/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, username, password, password2 }),

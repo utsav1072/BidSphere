@@ -17,7 +17,7 @@ const PlaceBid = ({ itemId }) => {
 
     try {
       const response = await axiosInstance.post(
-        "https://auctionhub.pythonanywhere.com/api/bids/create/",
+        "http://127.0.0.1:8000/api/bids/create/",
         { item: itemId, bid_amount: parseFloat(bidAmount) },
         {
           headers: {

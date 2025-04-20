@@ -13,19 +13,26 @@ const ItemForBid = () => {
   const navigate = useNavigate();
 
   async function getcat() {
-    const response = await axios.get("http://127.0.0.1:8000/api/category/");
-    setCat(response.data.categories);
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/category/");
+      setCat(response.data.categories);
+    } catch (err) {
+      setError("Failed to fetch categories.");
+    }
   }
 
   async function getuserid() {
-    const response = await axiosInstance.get("http://127.0.0.1:8000/api/test/", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authTokens.access}`,
-      },
-    });
-    setuserId(response.data.data.id);
-    // console.log(response.data.data.id)
+    try {
+      const response = await axiosInstance.get("http://127.0.0.1:8000/api/test/", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authTokens.access}`,
+        },
+      });
+      setUserId(response.data.data.id);
+    } catch (err) {
+      setError("Failed to fetch user information.");
+    }
   }
 
   useEffect(() => {
@@ -91,15 +98,35 @@ const ItemForBid = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
+    // Prepare FormData for multipart/form-data
+    const data = new FormData();
+
+    // Append item fields
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "image_url" && value) {
+        data.append(`item.image_url`, value);
+      } else {
+        data.append(`item.${key}`, value);
+      }
+    });
+    data.append("auction_status", auctionStatus);
+    data.append("highest_bid", highestBid !== null ? highestBid : "");
+    data.append("winner", winner !== null ? winner : "");
 
     try {
-      const response = await axiosInstance.post("http://127.0.0.1:8000/api/auctions/create/", formData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authTokens.access}`,
-        },
-      });
-      // console.log("Success:", response.data);
+      const response = await axiosInstance.post(
+        "http://127.0.0.1:8000/api/auctions/create/",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${authTokens.access}`,
+          },
+        }
+      );
       alert("Auction item submitted successfully!");
       navigate(`/auction/item/${response.data.id}`);
     } catch (error) {
