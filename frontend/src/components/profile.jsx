@@ -14,20 +14,25 @@ function Profile() {
   const navigate = useNavigate();
   const authTokens = useSelector((state) => state.auth.authTokens);
 
-  async function handelMoney() {
-    const formData = new FormData();
-    formData.append("balance", addbalance);
-    setAddbalance(0);
-
+  async function handelMoney(amount) {
     try {
       setIsLoading(true);
-      await axiosInstance.post('/test/', formData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authTokens?.access}`,
-        },
-      });
-      getUser();
+      // In handelMoney()
+      console.log("Sending balance:", amount, "Type:", typeof amount);
+      
+      // Send data as JSON instead of FormData
+      await axiosInstance.post('/test/', 
+        { balance: amount }, // 🔑 Send as JSON object
+        {
+          headers: {
+            "Content-Type": "application/json", // ✅ Correct header for JSON
+            Authorization: `Bearer ${authTokens?.access}`,
+          },
+        }
+      );
+      
+      setAddbalance(0); // Reset input after successful request
+      getUser(); // Refresh user data
     } catch (error) {
       if (error.response) {
         alert(`Failed to add money: ${error.response.data.message || 'Unknown error'}`);
@@ -38,7 +43,7 @@ function Profile() {
       setIsLoading(false);
     }
   }
-
+  
   async function getUser() {
     try {
       const response = await axiosInstance.get('/test/', {
@@ -66,9 +71,9 @@ function Profile() {
   };
 
   const handleAddMoney = useCallback(async (amount) => {
-    setAddbalance(balance + amount);
-    await handelMoney();
-  }, [balance, authTokens]);
+    setAddbalance(amount); // Send ONLY the amount being added
+    await handelMoney(amount);
+  }, [authTokens]); // Remove 'balance' from dependencies  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100/60 via-white/80 to-purple-100/60 flex items-center justify-center py-12 px-4">
@@ -131,7 +136,7 @@ function Profile() {
       {/* Add Money Modal */}
       {showAddMoneyModal && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50"
+          className="fixed inset-0 flex items-center justify-center z-50"
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
