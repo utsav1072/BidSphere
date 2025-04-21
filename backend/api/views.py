@@ -63,6 +63,7 @@ def testEndPoint(request):
         image = request.FILES.get('image')
         address = request.data.get('address')
         phone = request.data.get('phone_number')
+        addbalance = request.data.get('balance')
 
         user_profile = request.user
         if full_name:
@@ -75,6 +76,8 @@ def testEndPoint(request):
             user_profile.address = address
         if phone:
             user_profile.phone_number = phone
+        if addbalance:
+            user_profile.balance = addbalance
 
         user_profile.save()
 

@@ -12,6 +12,7 @@ class User(AbstractUser):
     bio = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(upload_to="user_images",default = 'image.png' ,null=True)
     verified = models.BooleanField(default=False)
+    balance = models.IntegerField(default=0)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
