@@ -77,7 +77,7 @@ def testEndPoint(request):
         if phone:
             user_profile.phone_number = phone
         if addbalance:
-            user_profile.balance = addbalance
+            user_profile.balance += int(str(addbalance))
 
         user_profile.save()
 
